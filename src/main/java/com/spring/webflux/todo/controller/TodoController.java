@@ -46,7 +46,9 @@ public class TodoController {
         @ApiResponse(code = 201, message = "Todo successfully created"),
         @ApiResponse(code = 401, message = "Unauthorized")
       })
-  @PostMapping(headers = "Accept=application/json")
+  @PostMapping(
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Mono<Todo>> createTodo(@RequestBody Mono<TodoResource> requestTodo) {
     return new ResponseEntity<Mono<Todo>>(todoService.create(requestTodo), HttpStatus.CREATED);
   }
@@ -61,7 +63,7 @@ public class TodoController {
             responseContainer = "List"),
         @ApiResponse(code = 401, message = "Unauthorized")
       })
-  @GetMapping(headers = "Accept=application/json")
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public Flux<Todo> getAllTodo() {
     return todoService.findAll();
   }
@@ -73,7 +75,10 @@ public class TodoController {
         @ApiResponse(code = 400, message = "Todo[id] not found", response = TodoException.class),
         @ApiResponse(code = 401, message = "Unauthorized")
       })
-  @PutMapping(value = "/{id}", headers = "Accept=application/json")
+  @PutMapping(
+      value = "/{id}",
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Mono<Todo>> updateTodo(
       @RequestBody Mono<TodoResource> todo, @PathVariable Long id) {
     return new ResponseEntity<Mono<Todo>>(todoService.update(todo, id), HttpStatus.OK);
@@ -94,7 +99,7 @@ public class TodoController {
             response = TodoException.class)
       })
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  @DeleteMapping(value = "/{id}", headers = "Accept=application/json")
+  @DeleteMapping(value = "/{id}")
   public ResponseEntity<Mono<Void>> deleteTodo(@PathVariable Long id) {
     return new ResponseEntity<Mono<Void>>(todoService.delete(id), HttpStatus.NO_CONTENT);
   }
