@@ -50,7 +50,6 @@ jobs:
         docker logs mysql
         docker logs todo
     - name: Push Image
-      uses: actions/checkout@v2
       run: |
         docker login ghcr.io -u $PACKAGE_USERNAME
         docker tag todo ghcr.io/$PACKAGE_USERNAME/${{ github.event.repository.name }}/todo
