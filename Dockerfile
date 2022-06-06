@@ -1,4 +1,5 @@
 FROM openjdk:11-jre-slim
+LABEL org.opencontainers.image.source="https://github.com/raghav2211/spring-web-flux-todo-app"
 ARG USER=todo
 ARG GROUP=todo
 ARG UID=1000
