@@ -27,7 +27,6 @@ hs_err_pid*
 *.classpath
 *.project
 .gradle
-gradle
 
 pom.properties
 
