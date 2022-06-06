@@ -2,19 +2,13 @@ name: Build
 
 on:
   push:
-    branches: [ main ]
-    paths-ignore: 
-      - 'todo-app/k8s/**'
-      - 'todo-app/swarm/**'
-      - 'todo-app/aws/**'
+    branches: [ master ]
+    paths-ignore:
       - '**/README.md'
       - '.github/**'
   pull_request:
-    branches: [ main ]
-    paths-ignore: 
-      - 'todo-app/k8s/**'
-      - 'todo-app/swarm/**'
-      - 'todo-app/aws/**'
+    branches: [ master ]
+    paths-ignore:
       - '**/README.md'
       - '.github/**'
 
@@ -22,9 +16,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./todo-app
 
     steps:
     - uses: actions/checkout@v2
