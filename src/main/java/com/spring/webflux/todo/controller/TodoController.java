@@ -7,9 +7,7 @@ import com.spring.webflux.todo.service.ITodoService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.ResponseHeader;
 import java.util.List;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,49 +26,29 @@ public class TodoController {
   }
 
   @ApiOperation(
-      value = "View Todo by provide id",
+      value = "View Todo by provided id",
       response = Todo.class,
       produces = MediaType.APPLICATION_JSON_VALUE)
   @ApiResponses(
       value = {
         @ApiResponse(code = 200, message = "Retrieved todo successfully"),
-        @ApiResponse(
-            code = 400,
-            message = "Todo record doesn't exist",
-            response = TodoException.class),
+        @ApiResponse(code = 400, message = "Todo [id] not found", response = TodoException.class),
       })
   @ApiResponse(code = 401, message = "Unauthorized")
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Mono<Todo>> getTodoById(@PathVariable Long id) {
-    var todo = todoService.findById(id);
-    return new ResponseEntity<Mono<Todo>>(todo, HttpStatus.OK);
+    return new ResponseEntity<Mono<Todo>>(todoService.findById(id), HttpStatus.OK);
   }
 
-  @ApiOperation(
-      value = "Create Todo",
-      response = Todo.class,
-      responseHeaders = {
-        @ResponseHeader(name = "Location", description = "Location of created todo")
-      })
+  @ApiOperation(value = "Create Todo", response = Todo.class)
   @ApiResponses(
       value = {
-        @ApiResponse(
-            code = 201,
-            message = "Todo successfully created",
-            responseHeaders = {
-              @ResponseHeader(name = "Location", description = "Location of created todo")
-            }),
+        @ApiResponse(code = 201, message = "Todo successfully created"),
         @ApiResponse(code = 401, message = "Unauthorized")
       })
   @PostMapping(headers = "Accept=application/json")
   public ResponseEntity<Mono<Todo>> createTodo(@RequestBody Mono<TodoResource> requestTodo) {
-
-    var todoCreated = todoService.create(requestTodo);
-    HttpHeaders headers = new HttpHeaders();
-    //    headers.setLocation(
-    //        ucBuilder.path("/todo/{id}").buildAndExpand(todoCreated.map(todo ->
-    // todo.getId())).toUri());
-    return new ResponseEntity<Mono<Todo>>(todoCreated, headers, HttpStatus.CREATED);
+    return new ResponseEntity<Mono<Todo>>(todoService.create(requestTodo), HttpStatus.CREATED);
   }
 
   @ApiOperation(value = "View all Todos", response = List.class)
@@ -92,10 +70,7 @@ public class TodoController {
   @ApiResponses(
       value = {
         @ApiResponse(code = 200, message = "Todo successfully updated", response = Todo.class),
-        @ApiResponse(
-            code = 400,
-            message = "Todo record doesn't exist",
-            response = TodoException.class),
+        @ApiResponse(code = 400, message = "Todo[id] not found", response = TodoException.class),
         @ApiResponse(code = 401, message = "Unauthorized")
       })
   @PutMapping(value = "/{id}", headers = "Accept=application/json")
@@ -110,7 +85,7 @@ public class TodoController {
         @ApiResponse(code = 204, message = "Todo successfully deleted", response = Void.class),
         @ApiResponse(
             code = 400,
-            message = "Todo record doesn't exist",
+            message = "No Todo with id [id] exists!",
             response = TodoException.class),
         @ApiResponse(code = 401, message = "Unauthorized"),
         @ApiResponse(

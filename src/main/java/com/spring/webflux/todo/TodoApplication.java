@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @OpenAPIDefinition(
-    info = @Info(title = "Todo app", version = "1.0", description = "Todo webFlux API"))
+    info = @Info(title = "Todo app", version = "1.0", description = "Todo WebFlux Rest API"))
 public class TodoApplication {
   public static void main(String[] args) {
     SpringApplication.run(TodoApplication.class, args);
