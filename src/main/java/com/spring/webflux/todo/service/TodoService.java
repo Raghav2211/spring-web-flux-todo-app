@@ -23,7 +23,7 @@ public class TodoService implements ITodoService {
 
   public Mono<Todo> create(Mono<TodoResource> todoResourceMono) {
     return validateTodoRequestContent(todoResourceMono)
-        .map(TodoService::mapTodo)
+        .map(TodoService::mapToTodo)
         .flatMap(todo -> Mono.fromCallable(() -> todoRepository.save(todo)));
   }
 
@@ -73,7 +73,7 @@ public class TodoService implements ITodoService {
     return Mono.just(id);
   }
 
-  public static Todo mapTodo(TodoResource todoResource) {
+  public static Todo mapToTodo(TodoResource todoResource) {
     Todo todo = new Todo();
     todo.setContent(todoResource.getContent());
     todo.setIsComplete(todoResource.getIsComplete());
