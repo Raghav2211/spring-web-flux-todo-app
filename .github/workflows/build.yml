@@ -51,7 +51,7 @@ jobs:
         docker logs todo
     - name: Push Image
       run: |
-        docker login ghcr.io -u $PACKAGE_USERNAME
+        docker login ghcr.io -u $PACKAGE_USERNAME -p $PACKAGE_RWD
         docker tag todo ghcr.io/$PACKAGE_USERNAME/${{ github.event.repository.name }}/todo
         docker push ghcr.io/$PACKAGE_USERNAME/${{ github.event.repository.name }}/todo
 
