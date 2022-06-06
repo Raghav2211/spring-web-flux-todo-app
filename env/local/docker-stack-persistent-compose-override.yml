@@ -1,0 +1,15 @@
+version: "3"
+services:
+  mysql:
+    volumes: 
+      - mysql_data:/var/lib/mysql:cached   # Strong consistency is quite expensive, requiring coordination between all of a files writers to guarantee 
+                                                      # they don’t inappropriately clobber each other’s changes
+                                                      # So Relax consistency guarantees using `cached` mode (Don’t do this in production …)
+volumes:
+  mysql_data:
+    # To use below configuration for host path ensure MYSQL_DATA_SRC_PATH should exists
+    # driver: local
+    # driver_opts:
+    #   type: none
+    #   device: $PWD/${MYSQL_DATA_SRC_PATH} 
+    #   o: bind                                                      
