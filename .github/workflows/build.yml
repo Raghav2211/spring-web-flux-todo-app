@@ -49,10 +49,11 @@ jobs:
       run: |
         docker logs mysql
         docker logs todo
-    - name: Push Image
-      run: |
-        docker login ghcr.io -u $PACKAGE_USERNAME -p $PACKAGE_RWD
-        docker tag todo ghcr.io/$PACKAGE_USERNAME/${{ github.event.repository.name }}/todo
-        docker push ghcr.io/$PACKAGE_USERNAME/${{ github.event.repository.name }}/todo
+    - name: Login
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ $PACKAGE_USERNAME }}
+        password: ${{ $PACKAGE_RWD }}
 
       
