@@ -2,13 +2,16 @@ package com.spring.webflux.todo.service;
 
 import com.spring.webflux.todo.dto.TodoResource;
 import com.spring.webflux.todo.entity.Todo;
+import com.spring.webflux.todo.exception.TodoNotFoundException;
 import com.spring.webflux.todo.repository.TodoRepository;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Service
 @Transactional
@@ -23,8 +26,11 @@ public class TodoService implements ITodoService {
 
   public Mono<Todo> create(Mono<TodoResource> todoResourceMono) {
     return validateTodoRequestContent(todoResourceMono)
-        .map(TodoService::mapToTodo)
-        .flatMap(todo -> Mono.fromCallable(() -> todoRepository.save(todo)));
+        .map(this::mapToTodo)
+        .flatMap(
+            todo ->
+                Mono.fromCallable(() -> todoRepository.save(todo))
+                    .subscribeOn(Schedulers.boundedElastic()));
   }
 
   public Mono<Todo> update(Mono<TodoResource> todoResourceMono, Long id) {
@@ -36,15 +42,17 @@ public class TodoService implements ITodoService {
                     .map(todo -> todoRepository.save(todo)));
   }
 
-  private static void updateExistingTodo(Todo todo, TodoResource todoResource) {
+  private void updateExistingTodo(Todo todo, TodoResource todoResource) {
     todo.setIsComplete(todoResource.getIsComplete());
     todo.setContent(todoResource.getContent());
   }
 
   public Mono<Todo> findById(Long id) {
-    return Mono.justOrEmpty(todoRepository.findById(id))
-        .switchIfEmpty(
-            Mono.error(new IllegalArgumentException(String.format("Todo[%d] not found", id))));
+    return Mono.fromCallable(() -> todoRepository.findById(id))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .switchIfEmpty(Mono.error(new TodoNotFoundException(id)))
+        .subscribeOn(Schedulers.boundedElastic());
   }
 
   public Flux<Todo> findAll() {
@@ -56,7 +64,6 @@ public class TodoService implements ITodoService {
         .flatMap(todoId -> Mono.fromRunnable(() -> todoRepository.deleteById(todoId)));
   }
 
-  // business logics
   private Mono<TodoResource> validateTodoRequestContent(Mono<TodoResource> todoResourceMono) {
     return todoResourceMono
         .filter(todoResource -> StringUtils.hasText(todoResource.getContent()))
@@ -73,7 +80,7 @@ public class TodoService implements ITodoService {
     return Mono.just(id);
   }
 
-  public static Todo mapToTodo(TodoResource todoResource) {
+  public Todo mapToTodo(TodoResource todoResource) {
     Todo todo = new Todo();
     todo.setContent(todoResource.getContent());
     todo.setIsComplete(todoResource.getIsComplete());
