@@ -68,12 +68,12 @@ public class TodoRouter {
                       responseCode = "404",
                       description = "Todo not found",
                       headers = {@Header(name = REQUEST_HEADER_ID)},
-                      content = {}),
+                      content = {@Content(schema = @Schema)}),
                   @ApiResponse(
                       responseCode = "400",
                       description = "Bad Request",
                       headers = {@Header(name = REQUEST_HEADER_ID)},
-                      content = {}),
+                      content = {@Content(schema = @Schema)}),
                   @ApiResponse(
                       responseCode = "401",
                       description = "Unauthorized",
@@ -101,7 +101,7 @@ public class TodoRouter {
                   @ApiResponse(
                       responseCode = "401",
                       description = "Unauthorized",
-                      content = {})
+                      content = {@Content(schema = @Schema)})
                 },
                 requestBody =
                     @RequestBody(
@@ -124,7 +124,7 @@ public class TodoRouter {
                   @ApiResponse(
                       responseCode = "401",
                       description = "Unauthorized",
-                      content = {})
+                      content = {@Content(schema = @Schema)})
                 },
                 requestBody =
                     @RequestBody(
@@ -147,7 +147,7 @@ public class TodoRouter {
                   @ApiResponse(
                       responseCode = "401",
                       description = "Unauthorized",
-                      content = {})
+                      content = {@Content(schema = @Schema)})
                 })),
     @RouterOperation(
         path = "/api/v2/todo/{id}",
@@ -161,15 +161,15 @@ public class TodoRouter {
                   @ApiResponse(
                       responseCode = "204",
                       description = "Todo successfully deleted",
-                      content = {}),
+                      content = {@Content(schema = @Schema)}),
                   @ApiResponse(
                       responseCode = "400",
                       description = "No Todo with id [id] exists!",
-                      content = {}),
+                      content = {@Content(schema = @Schema)}),
                   @ApiResponse(
                       responseCode = "500",
                       description = "No Todo with id exists!",
-                      content = {})
+                      content = {@Content(schema = @Schema)})
                 },
                 parameters = {@Parameter(in = ParameterIn.PATH, name = REQUEST_HEADER_ID)})),
   })
