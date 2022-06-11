@@ -7,7 +7,6 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.*
 import com.spring.webflux.todo.dto.TodoResource;
 import com.spring.webflux.todo.entity.Todo;
 import com.spring.webflux.todo.exception.InvalidTodoException;
-import com.spring.webflux.todo.exception.TodoException;
 import com.spring.webflux.todo.exception.TodoRuntimeException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -95,9 +94,14 @@ public class TodoRouter {
                       description = "Todo successfully updated",
                       content = @Content(schema = @Schema(implementation = Todo.class))),
                   @ApiResponse(
+                      responseCode = "404",
+                      description = "Todo not found",
+                      headers = {@Header(name = REQUEST_HEADER_ID)},
+                      content = {@Content(schema = @Schema)}),
+                  @ApiResponse(
                       responseCode = "400",
-                      description = "Todo[id] not found",
-                      content = @Content(schema = @Schema(implementation = TodoException.class))),
+                      description = "Bad Request",
+                      content = {@Content(schema = @Schema)}),
                   @ApiResponse(
                       responseCode = "401",
                       description = "Unauthorized",
@@ -121,6 +125,10 @@ public class TodoRouter {
                       responseCode = "201",
                       description = "Todo successfully created",
                       content = @Content(schema = @Schema(implementation = Todo.class))),
+                  @ApiResponse(
+                      responseCode = "400",
+                      description = "Bad Request",
+                      content = {@Content(schema = @Schema)}),
                   @ApiResponse(
                       responseCode = "401",
                       description = "Unauthorized",
@@ -163,12 +171,17 @@ public class TodoRouter {
                       description = "Todo successfully deleted",
                       content = {@Content(schema = @Schema)}),
                   @ApiResponse(
-                      responseCode = "400",
-                      description = "No Todo with id [id] exists!",
+                      responseCode = "404",
+                      description = "Todo not found",
+                      headers = {@Header(name = "id")},
                       content = {@Content(schema = @Schema)}),
                   @ApiResponse(
-                      responseCode = "500",
-                      description = "No Todo with id exists!",
+                      responseCode = "400",
+                      description = "Bad Request",
+                      content = {@Content(schema = @Schema)}),
+                  @ApiResponse(
+                      responseCode = "401",
+                      description = "Unauthorized",
                       content = {@Content(schema = @Schema)})
                 },
                 parameters = {@Parameter(in = ParameterIn.PATH, name = REQUEST_HEADER_ID)})),
@@ -203,8 +216,14 @@ public class TodoRouter {
                                         TodoRuntimeException.class, handleInvalidTodoRequest)
                                     .onErrorResume(
                                         InvalidTodoException.class, handleInvalidTodoRequest))
-                        .andRoute(method(HttpMethod.DELETE), todoRouteHandler::deleteTodo))
-                .andRoute(GET("/{id}"), this::badRequest)));
+                        .andRoute(
+                            method(HttpMethod.DELETE),
+                            serverRequest ->
+                                todoRouteHandler
+                                    .deleteTodo(serverRequest)
+                                    .onErrorResume(
+                                        InvalidTodoException.class, handleInvalidTodoRequest)))
+                .andRoute(path("/{id}"), this::badRequest)));
   }
 
   private Mono<ServerResponse> badRequest(ServerRequest request) {

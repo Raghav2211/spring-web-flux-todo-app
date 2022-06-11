@@ -2,11 +2,13 @@ package com.spring.webflux.todo.router;
 
 import com.spring.webflux.todo.dto.TodoResource;
 import com.spring.webflux.todo.entity.Todo;
+import com.spring.webflux.todo.exception.InvalidTodoException;
 import com.spring.webflux.todo.exception.TodoRuntimeException;
 import com.spring.webflux.todo.repository.TodoRepository;
 import com.spring.webflux.todo.service.ITodoService;
 import java.net.URI;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -67,7 +69,12 @@ public class TodoRouteHandler {
 
   public Mono<ServerResponse> deleteTodo(ServerRequest request) {
     var id = Long.valueOf(request.pathVariable("id"));
-    return ServerResponse.noContent().build(todoService.delete(id));
+    return todoService
+        .delete(id)
+        .flatMap(unused -> ServerResponse.ok().build())
+        .onErrorResume(
+            EmptyResultDataAccessException.class,
+            unused -> Mono.error(new InvalidTodoException(id)));
   }
 
   public Todo mapToTodo(TodoResource todoResource) {

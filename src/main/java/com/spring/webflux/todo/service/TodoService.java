@@ -60,7 +60,7 @@ public class TodoService implements ITodoService {
   }
 
   public Mono<Void> delete(Long id) {
-    return validateTodoRequestId(id)
+    return Mono.just(id)
         .flatMap(todoId -> Mono.fromRunnable(() -> todoRepository.deleteById(todoId)));
   }
 
@@ -70,14 +70,6 @@ public class TodoService implements ITodoService {
         .switchIfEmpty(
             Mono.error(
                 new IllegalArgumentException(String.format("Todo content cannot be empty"))));
-  }
-
-  private Mono<Long> validateTodoRequestId(Long id) {
-    if (id == null || id < 0) {
-      return Mono.error(
-          new IllegalArgumentException(String.format("Todo[%d] is not a valid id", id)));
-    }
-    return Mono.just(id);
   }
 
   public Todo mapToTodo(TodoResource todoResource) {
