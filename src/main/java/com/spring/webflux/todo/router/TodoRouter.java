@@ -6,7 +6,9 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.*
 
 import com.spring.webflux.todo.dto.TodoResource;
 import com.spring.webflux.todo.entity.Todo;
+import com.spring.webflux.todo.exception.InvalidTodoException;
 import com.spring.webflux.todo.exception.TodoException;
+import com.spring.webflux.todo.exception.TodoRuntimeException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -15,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import java.util.function.Function;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +33,20 @@ import reactor.core.publisher.Mono;
 
 @Configuration(proxyBeanMethods = false)
 public class TodoRouter {
+
+  public static final String REQUEST_HEADER_ID = "id";
+  private final Function<? super TodoRuntimeException, Mono<? extends ServerResponse>>
+      handleInvalidTodoRequest =
+          todoException ->
+              todoException instanceof InvalidTodoException
+                  ? ServerResponse.status(todoException.getHttpStatus())
+                      .headers(
+                          httpHeaders ->
+                              httpHeaders.add(
+                                  REQUEST_HEADER_ID,
+                                  ((InvalidTodoException) todoException).getTodoId().toString()))
+                      .build()
+                  : ServerResponse.status(todoException.getHttpStatus()).build();
 
   @Bean
   @RouterOperations({
@@ -50,14 +67,19 @@ public class TodoRouter {
                   @ApiResponse(
                       responseCode = "404",
                       description = "Todo not found",
-                      headers = {@Header(name = "id")}),
+                      headers = {@Header(name = REQUEST_HEADER_ID)},
+                      content = {}),
                   @ApiResponse(
                       responseCode = "400",
                       description = "Bad Request",
-                      headers = {@Header(name = "id")}),
-                  @ApiResponse(responseCode = "401", description = "Unauthorized")
+                      headers = {@Header(name = REQUEST_HEADER_ID)},
+                      content = {}),
+                  @ApiResponse(
+                      responseCode = "401",
+                      description = "Unauthorized",
+                      content = {@Content(schema = @Schema)})
                 },
-                parameters = {@Parameter(in = ParameterIn.PATH, name = "id")})),
+                parameters = {@Parameter(in = ParameterIn.PATH, name = REQUEST_HEADER_ID)})),
     @RouterOperation(
         path = "/api/v2/todo/{id}",
         produces = {MediaType.APPLICATION_JSON_VALUE},
@@ -76,12 +98,15 @@ public class TodoRouter {
                       responseCode = "400",
                       description = "Todo[id] not found",
                       content = @Content(schema = @Schema(implementation = TodoException.class))),
-                  @ApiResponse(responseCode = "401", description = "Unauthorized")
+                  @ApiResponse(
+                      responseCode = "401",
+                      description = "Unauthorized",
+                      content = {})
                 },
                 requestBody =
                     @RequestBody(
                         content = @Content(schema = @Schema(implementation = TodoResource.class))),
-                parameters = {@Parameter(in = ParameterIn.PATH, name = "id")})),
+                parameters = {@Parameter(in = ParameterIn.PATH, name = REQUEST_HEADER_ID)})),
     @RouterOperation(
         path = "/api/v2/todo",
         produces = {MediaType.APPLICATION_JSON_VALUE},
@@ -96,7 +121,10 @@ public class TodoRouter {
                       responseCode = "201",
                       description = "Todo successfully created",
                       content = @Content(schema = @Schema(implementation = Todo.class))),
-                  @ApiResponse(responseCode = "401", description = "Unauthorized")
+                  @ApiResponse(
+                      responseCode = "401",
+                      description = "Unauthorized",
+                      content = {})
                 },
                 requestBody =
                     @RequestBody(
@@ -116,7 +144,10 @@ public class TodoRouter {
                       responseCode = "200",
                       description = "Retrieved all todos",
                       content = @Content(schema = @Schema(implementation = Todo.class))),
-                  @ApiResponse(responseCode = "401", description = "Unauthorized")
+                  @ApiResponse(
+                      responseCode = "401",
+                      description = "Unauthorized",
+                      content = {})
                 })),
     @RouterOperation(
         path = "/api/v2/todo/{id}",
@@ -127,11 +158,20 @@ public class TodoRouter {
             @Operation(
                 operationId = "deleteTodo",
                 responses = {
-                  @ApiResponse(responseCode = "204", description = "Todo successfully deleted"),
-                  @ApiResponse(responseCode = "400", description = "No Todo with id [id] exists!"),
-                  @ApiResponse(responseCode = "500", description = "No Todo with id exists!")
+                  @ApiResponse(
+                      responseCode = "204",
+                      description = "Todo successfully deleted",
+                      content = {}),
+                  @ApiResponse(
+                      responseCode = "400",
+                      description = "No Todo with id [id] exists!",
+                      content = {}),
+                  @ApiResponse(
+                      responseCode = "500",
+                      description = "No Todo with id exists!",
+                      content = {})
                 },
-                parameters = {@Parameter(in = ParameterIn.PATH, name = "id")})),
+                parameters = {@Parameter(in = ParameterIn.PATH, name = REQUEST_HEADER_ID)})),
   })
   public RouterFunction<ServerResponse> route(TodoRouteHandler todoRouteHandler) {
     return nest(
@@ -139,18 +179,39 @@ public class TodoRouter {
         nest(
             accept(APPLICATION_JSON).or(contentType(APPLICATION_JSON)),
             RouterFunctions.route(GET(""), todoRouteHandler::getAllTodo)
-                .andRoute(method(HttpMethod.POST), todoRouteHandler::createTodo)
+                .andRoute(
+                    method(HttpMethod.POST),
+                    serverRequest ->
+                        todoRouteHandler
+                            .createTodo(serverRequest)
+                            .onErrorResume(TodoRuntimeException.class, handleInvalidTodoRequest))
                 .andNest(
                     path("/{id:[0-9]+}"),
-                    RouterFunctions.route(method(HttpMethod.GET), todoRouteHandler::getTodoById)
-                        .andRoute(method(HttpMethod.PUT), todoRouteHandler::updateTodo)
+                    RouterFunctions.route(
+                            method(HttpMethod.GET),
+                            serverRequest ->
+                                todoRouteHandler
+                                    .getTodoById(serverRequest)
+                                    .onErrorResume(
+                                        InvalidTodoException.class, handleInvalidTodoRequest))
+                        .andRoute(
+                            method(HttpMethod.PUT),
+                            serverRequest ->
+                                todoRouteHandler
+                                    .updateTodo(serverRequest)
+                                    .onErrorResume(
+                                        TodoRuntimeException.class, handleInvalidTodoRequest)
+                                    .onErrorResume(
+                                        InvalidTodoException.class, handleInvalidTodoRequest))
                         .andRoute(method(HttpMethod.DELETE), todoRouteHandler::deleteTodo))
                 .andRoute(GET("/{id}"), this::badRequest)));
   }
 
   private Mono<ServerResponse> badRequest(ServerRequest request) {
     return ServerResponse.badRequest()
-        .headers(httpHeaders -> httpHeaders.add("id", request.pathVariable("id")))
+        .headers(
+            httpHeaders ->
+                httpHeaders.add(REQUEST_HEADER_ID, request.pathVariable(REQUEST_HEADER_ID)))
         .build();
   }
 }

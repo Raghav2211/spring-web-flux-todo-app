@@ -2,11 +2,12 @@ package com.spring.webflux.todo.router;
 
 import com.spring.webflux.todo.dto.TodoResource;
 import com.spring.webflux.todo.entity.Todo;
-import com.spring.webflux.todo.exception.TodoNotFoundException;
+import com.spring.webflux.todo.exception.TodoRuntimeException;
 import com.spring.webflux.todo.repository.TodoRepository;
 import com.spring.webflux.todo.service.ITodoService;
 import java.net.URI;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -29,24 +30,13 @@ public class TodoRouteHandler {
   }
 
   public Mono<ServerResponse> getTodoById(ServerRequest request) {
-    var id = Long.valueOf(request.pathVariable("id"));
     return todoService
-        .findById(id)
-        .flatMap((todo) -> ServerResponse.ok().body(BodyInserters.fromValue(todo)))
-        .onErrorResume(
-            TodoNotFoundException.class,
-            unused ->
-                ServerResponse.notFound()
-                    .headers(httpHeaders -> httpHeaders.add("id", String.valueOf(id)))
-                    .build());
+        .findById(Long.valueOf(request.pathVariable("id")))
+        .flatMap((todo) -> ServerResponse.ok().body(BodyInserters.fromValue(todo)));
   }
 
   public Mono<ServerResponse> createTodo(ServerRequest request) {
-    return request
-        .bodyToMono(TodoResource.class)
-        .filter(todoResource -> StringUtils.hasText(todoResource.getContent()))
-        .switchIfEmpty(
-            Mono.error(new IllegalArgumentException(String.format("Todo content cannot be empty"))))
+    return validateAndGetTodoResource(request)
         .map(this::mapToTodo)
         .flatMap(
             todo ->
@@ -60,11 +50,7 @@ public class TodoRouteHandler {
 
   public Mono<ServerResponse> updateTodo(ServerRequest request) {
     var id = Long.valueOf(request.pathVariable("id"));
-    return request
-        .bodyToMono(TodoResource.class)
-        .filter(todoResource -> StringUtils.hasText(todoResource.getContent()))
-        .switchIfEmpty(
-            Mono.error(new IllegalArgumentException(String.format("Todo content cannot be empty"))))
+    return validateAndGetTodoResource(request)
         .flatMap(
             todoResource ->
                 todoService
@@ -89,6 +75,16 @@ public class TodoRouteHandler {
     todo.setContent(todoResource.getContent());
     todo.setIsComplete(todoResource.getIsComplete());
     return todo;
+  }
+
+  private Mono<TodoResource> validateAndGetTodoResource(ServerRequest request) {
+    return request
+        .bodyToMono(TodoResource.class)
+        .filter(todoResource -> StringUtils.hasText(todoResource.getContent()))
+        .switchIfEmpty(
+            Mono.error(
+                new TodoRuntimeException(
+                    HttpStatus.BAD_REQUEST, String.format("Todo content cannot be empty"))));
   }
 
   private void updateExistingTodo(Todo todo, TodoResource todoResource) {

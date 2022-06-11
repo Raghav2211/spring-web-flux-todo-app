@@ -2,7 +2,7 @@ package com.spring.webflux.todo.service;
 
 import com.spring.webflux.todo.dto.TodoResource;
 import com.spring.webflux.todo.entity.Todo;
-import com.spring.webflux.todo.exception.TodoNotFoundException;
+import com.spring.webflux.todo.exception.InvalidTodoException;
 import com.spring.webflux.todo.repository.TodoRepository;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +51,7 @@ public class TodoService implements ITodoService {
     return Mono.fromCallable(() -> todoRepository.findById(id))
         .filter(Optional::isPresent)
         .map(Optional::get)
-        .switchIfEmpty(Mono.error(new TodoNotFoundException(id)))
+        .switchIfEmpty(Mono.error(new InvalidTodoException(id, "Todo not found")))
         .subscribeOn(Schedulers.boundedElastic());
   }
 
