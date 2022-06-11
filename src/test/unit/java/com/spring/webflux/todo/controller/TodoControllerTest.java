@@ -36,15 +36,9 @@ import org.springframework.web.reactive.function.BodyInserters;
 @WebFluxTest(controllers = TodoController.class)
 public class TodoControllerTest {
 
-  private static final String TOOD_ID_MUST_BE_GRATER_THAN_0 = "Tood id must be grater than 0";
+  private static final String TODO_ROOT_PATH = "/api/v1/todo";
 
-  private static final String CONTENT_NOT_SPECIFIED = "Content not specified";
-
-  private static final String TODO_RECORD_DOESN_T_EXIST = "Todo record doesn't exist";
-
-  private static final String TODO_ROOT = "/api/v1/todo";
-
-  private static final String TODO_FINDBY_ID = "/api/v1/todo/1";
+  private static final String NON_FUNCTIONAL_TODO_WITH_ID_PATH = TODO_ROOT_PATH + "/1";
 
   @Autowired private WebTestClient webclient;
   @Autowired ApplicationContext context;
@@ -79,7 +73,7 @@ public class TodoControllerTest {
     Mockito.when(todoRepository.findById(1l)).thenReturn(Optional.of(todoResponse));
     webclient
         .get()
-        .uri(TODO_FINDBY_ID)
+        .uri(NON_FUNCTIONAL_TODO_WITH_ID_PATH)
         .exchange()
         .expectStatus()
         .isOk()
@@ -97,13 +91,13 @@ public class TodoControllerTest {
     Mockito.when(todoRepository.findById(1l)).thenReturn(Optional.empty());
     webclient
         .get()
-        .uri(TODO_FINDBY_ID)
+        .uri(NON_FUNCTIONAL_TODO_WITH_ID_PATH)
         .exchange()
         .expectStatus()
         .is5xxServerError()
         .expectBody()
         .jsonPath("$.message")
-        .isEqualTo("Todo[1] not found");
+        .isEqualTo("Todo not found");
     Mockito.verify(todoRepository).findById(1l);
     Mockito.verifyNoMoreInteractions(todoRepository);
   }
@@ -116,7 +110,7 @@ public class TodoControllerTest {
 
     webclient
         .get()
-        .uri(TODO_ROOT)
+        .uri(TODO_ROOT_PATH)
         .exchange()
         .expectStatus()
         .isOk()
@@ -138,7 +132,7 @@ public class TodoControllerTest {
     Mockito.when(todoRepository.save(Mockito.any(Todo.class))).thenReturn(returnTodo);
     webclient
         .post()
-        .uri(TODO_ROOT)
+        .uri(TODO_ROOT_PATH)
         .body(BodyInserters.fromValue(todoRequest))
         .headers(httpHeaders -> httpHeaders.setAccept(List.of(MediaType.APPLICATION_JSON)))
         .exchange()
@@ -157,7 +151,7 @@ public class TodoControllerTest {
   public void testCreateWithInvalidTodo() {
     webclient
         .post()
-        .uri(TODO_ROOT)
+        .uri(TODO_ROOT_PATH)
         .body(BodyInserters.fromValue(todoInvalidRequest))
         .headers(httpHeaders -> httpHeaders.setAccept(List.of(MediaType.APPLICATION_JSON)))
         .exchange()
@@ -182,7 +176,7 @@ public class TodoControllerTest {
 
     webclient
         .put()
-        .uri(TODO_FINDBY_ID)
+        .uri(NON_FUNCTIONAL_TODO_WITH_ID_PATH)
         .body(BodyInserters.fromValue(todoRequest))
         .headers(httpHeaders -> httpHeaders.setAccept(List.of(MediaType.APPLICATION_JSON)))
         .exchange()
@@ -209,7 +203,7 @@ public class TodoControllerTest {
     Mockito.when(todoRepository.findById(1l)).thenReturn(Optional.empty());
     webclient
         .put()
-        .uri(TODO_FINDBY_ID)
+        .uri(NON_FUNCTIONAL_TODO_WITH_ID_PATH)
         .body(BodyInserters.fromValue(todoRequest))
         .headers(httpHeaders -> httpHeaders.setAccept(List.of(MediaType.APPLICATION_JSON)))
         .exchange()
@@ -217,7 +211,7 @@ public class TodoControllerTest {
         .is5xxServerError()
         .expectBody()
         .jsonPath("$.message")
-        .isEqualTo("Todo[1] not found");
+        .isEqualTo("Todo not found");
 
     Mockito.verify(todoRepository).findById(1l);
     Mockito.verifyNoMoreInteractions(todoRepository);
@@ -229,7 +223,7 @@ public class TodoControllerTest {
   public void testDeleteTodo() {
     Mockito.doNothing().when(todoRepository).deleteById(1l);
     MediaType MEDIA_TYPE_JSON_UTF8 = MediaType.APPLICATION_JSON;
-    webclient.delete().uri(TODO_FINDBY_ID).exchange().expectStatus().isNoContent();
+    webclient.delete().uri(NON_FUNCTIONAL_TODO_WITH_ID_PATH).exchange().expectStatus().isOk();
     Mockito.verify(todoRepository).deleteById(1l);
     Mockito.verifyNoMoreInteractions(todoRepository);
   }
@@ -243,10 +237,9 @@ public class TodoControllerTest {
         .uri("/api/v1/todo/-1")
         .exchange()
         .expectStatus()
-        .is5xxServerError()
-        .expectBody()
-        .jsonPath("$.message")
-        .isEqualTo("Todo[-1] is not a valid id");
+        .isBadRequest()
+        .expectHeader()
+        .valueEquals("id", "-1");
     Mockito.verifyNoInteractions(todoRepository);
   }
 }

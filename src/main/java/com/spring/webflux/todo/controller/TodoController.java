@@ -8,9 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -98,9 +96,12 @@ public class TodoController {
             message = "No Todo with id exists!",
             response = TodoException.class)
       })
-  @ResponseStatus(HttpStatus.NO_CONTENT)
   @DeleteMapping(value = "/{id}")
   public ResponseEntity<Mono<Void>> deleteTodo(@PathVariable Long id) {
-    return new ResponseEntity<Mono<Void>>(todoService.delete(id), HttpStatus.NO_CONTENT);
+    var httpHeader = new HttpHeaders();
+    httpHeader.add("id", String.valueOf(id));
+    return id == null || id < 0
+        ? new ResponseEntity<Mono<Void>>(httpHeader, HttpStatus.BAD_REQUEST)
+        : new ResponseEntity<Mono<Void>>(todoService.delete(id), HttpStatus.OK);
   }
 }
