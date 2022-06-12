@@ -10,8 +10,8 @@ TODO App uses following technologies:
 * [Java 11] - JDK
 * [Maven-3.6.3] - Build tool
 * [Gradle-6.7.1] - Build tool
-* [Springboot-2.6.1] - Open source Java-based Micro-Service framework
-* [Swagger-3.0.0] - Rest API documentation
+* [Springboot-2.7.0] - Open source Java-based Micro-Service framework
+* [OpenApi-1.6.9] - Rest API documentation
 * [Junit-5.7.0] - Unit test
 * [MySql-8.0.22] - Backend data store
 * [Docker-19.03.8] - OS level virtualization
