@@ -11,7 +11,7 @@ services:
     image: todo:${TODO_IMAGE_TAG:-latest}
     depends_on:
       - mysql # will not wait for mysql to be “ready” before starting todo-app , It'll only confirm dependency order &
-                 # will automatic create dependencies which include in service defination
+      # will automatic create dependencies which include in service defination
     ports:
       - 8080:8080
     environment:

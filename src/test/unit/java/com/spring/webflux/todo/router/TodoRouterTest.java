@@ -1,20 +1,24 @@
-package com.spring.webflux.todo.controller;
+package com.spring.webflux.todo.router;
 
 import com.spring.webflux.todo.api.AbstractTodoTest;
-import com.spring.webflux.todo.repository.TodoRepository;
 import com.spring.webflux.todo.security.TodoWebSecurityConfig;
 import com.spring.webflux.todo.service.TodoService;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@Import({TodoWebSecurityConfig.class, TodoService.class, TodoRepository.class})
-@WebFluxTest(controllers = TodoController.class)
-public class TodoControllerTest extends AbstractTodoTest {
-
-  private static final String TODO_ROOT_PATH = "/api/v1/todo";
+@ContextConfiguration(
+    classes = {
+      TodoWebSecurityConfig.class,
+      TodoRouter.class,
+      TodoRouteHandler.class,
+      TodoService.class,
+    })
+@WebFluxTest
+public class TodoRouterTest extends AbstractTodoTest {
+  private static final String TODO_ROOT_PATH = "/api/v2/todo";
 
   @Override
   protected String apiRootPath() {
