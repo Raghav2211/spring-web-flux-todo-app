@@ -198,7 +198,6 @@ public class TodoRouterTest {
   @Test
   @WithMockUser
   public void testUpdateNonExistTodo() {
-    MediaType MEDIA_TYPE_JSON_UTF8 = MediaType.APPLICATION_JSON;
     Mockito.when(todoRepository.findById(1l)).thenReturn(Optional.empty());
     webclient
         .put()
@@ -232,7 +231,7 @@ public class TodoRouterTest {
   public void testDeleteTodoWithNegativeId() {
     webclient
         .delete()
-        .uri("/api/v2/todo/-1")
+        .uri(TODO_ROOT_PATH+"/-1")
         .exchange()
         .expectStatus()
         .isBadRequest()
