@@ -3,9 +3,11 @@ package com.spring.webflux.todo.service;
 import com.spring.webflux.todo.dto.TodoResource;
 import com.spring.webflux.todo.entity.Todo;
 import com.spring.webflux.todo.exception.InvalidTodoException;
+import com.spring.webflux.todo.exception.TodoRuntimeException;
 import com.spring.webflux.todo.repository.TodoRepository;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -69,7 +71,8 @@ public class TodoService implements ITodoService {
         .filter(todoResource -> StringUtils.hasText(todoResource.getContent()))
         .switchIfEmpty(
             Mono.error(
-                new IllegalArgumentException(String.format("Todo content cannot be empty"))));
+                new TodoRuntimeException(
+                    HttpStatus.BAD_REQUEST, String.format("Todo content cannot be empty"))));
   }
 
   public Todo mapToTodo(TodoResource todoResource) {
