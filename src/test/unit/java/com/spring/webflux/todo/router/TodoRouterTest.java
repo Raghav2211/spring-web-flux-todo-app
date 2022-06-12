@@ -1,4 +1,4 @@
-package com.spring.webflux.todo.controller;
+package com.spring.webflux.todo.router;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -24,35 +24,38 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
 @ExtendWith(SpringExtension.class)
-@Import({TodoWebSecurityConfig.class, TodoService.class, TodoRepository.class})
-@WebFluxTest(controllers = TodoController.class)
-public class TodoControllerTest {
-
-  private static final String TODO_ROOT_PATH = "/api/v1/todo";
+@ContextConfiguration(
+    classes = {
+      TodoWebSecurityConfig.class,
+      TodoRouter.class,
+      TodoRouteHandler.class,
+      TodoService.class,
+    })
+@WebFluxTest
+public class TodoRouterTest {
+  private static final String TODO_ROOT_PATH = "/api/v2/todo";
 
   private static final String TODO_WITH_ID_PATH = TODO_ROOT_PATH + "/1";
+  @Autowired private ApplicationContext context;
 
-  @Autowired private WebTestClient webclient;
-  @Autowired ApplicationContext context;
   @MockBean private TodoRepository todoRepository;
-
   @SpyBean private ITodoService todoService;
-
+  private WebTestClient webclient;
   private static Todo todoResponse;
   private static TodoResource todoRequest;
   private static TodoResource todoInvalidRequest;
 
   @BeforeEach
-  public void setup() {
-    this.webclient = WebTestClient.bindToApplicationContext(this.context).configureClient().build();
+  public void setUp() {
+    webclient = WebTestClient.bindToApplicationContext(context).build();
   }
 
   @BeforeAll
@@ -94,10 +97,9 @@ public class TodoControllerTest {
         .uri(TODO_WITH_ID_PATH)
         .exchange()
         .expectStatus()
-        .is5xxServerError()
-        .expectBody()
-        .jsonPath("$.message")
-        .isEqualTo("Todo not found");
+        .isNotFound()
+        .expectHeader()
+        .valueEquals("id", 1);
     Mockito.verify(todoRepository).findById(1l);
     Mockito.verifyNoMoreInteractions(todoRepository);
   }
@@ -134,7 +136,7 @@ public class TodoControllerTest {
         .post()
         .uri(TODO_ROOT_PATH)
         .body(BodyInserters.fromValue(todoRequest))
-        .headers(httpHeaders -> httpHeaders.setAccept(List.of(MediaType.APPLICATION_JSON)))
+        .headers(httpHeaders -> httpHeaders.setContentType(MediaType.APPLICATION_JSON))
         .exchange()
         .expectStatus()
         .isCreated()
@@ -156,10 +158,7 @@ public class TodoControllerTest {
         .headers(httpHeaders -> httpHeaders.setAccept(List.of(MediaType.APPLICATION_JSON)))
         .exchange()
         .expectStatus()
-        .is5xxServerError()
-        .expectBody()
-        .jsonPath("$.message")
-        .isEqualTo("Todo content cannot be empty");
+        .isBadRequest();
     Mockito.verifyNoInteractions(todoRepository);
   }
 
@@ -208,10 +207,9 @@ public class TodoControllerTest {
         .headers(httpHeaders -> httpHeaders.setAccept(List.of(MediaType.APPLICATION_JSON)))
         .exchange()
         .expectStatus()
-        .is5xxServerError()
-        .expectBody()
-        .jsonPath("$.message")
-        .isEqualTo("Todo not found");
+        .isNotFound()
+        .expectHeader()
+        .valueEquals("id", 1);
 
     Mockito.verify(todoRepository).findById(1l);
     Mockito.verifyNoMoreInteractions(todoRepository);
@@ -234,7 +232,7 @@ public class TodoControllerTest {
   public void testDeleteTodoWithNegativeId() {
     webclient
         .delete()
-        .uri("/api/v1/todo/-1")
+        .uri("/api/v2/todo/-1")
         .exchange()
         .expectStatus()
         .isBadRequest()
