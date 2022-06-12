@@ -59,6 +59,7 @@ docker build --build-arg JAR_FILE=build/libs/\*.jar --tag todo:1.0.0 .
 
 ## Deploy ##
 
+#### Local ####     
    - Install
   
         ```bash
@@ -72,6 +73,9 @@ docker build --build-arg JAR_FILE=build/libs/\*.jar --tag todo:1.0.0 .
         ```bash
         docker-compose down
         ```     
+
+#### Environment ####     
+[Todo Infra](https://github.com/Raghav2211/todo-app-infra)
         
 ## Configuration ## 
 
