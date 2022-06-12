@@ -40,8 +40,12 @@ or
 ```bash
 ./gradlew clean build
 ```
-
 ##### Docker image #####
+
+```bash
+docker pull ghcr.io/raghav2211/spring-web-flux-todo-app/todo
+```
+or
 
 ```bash
 
@@ -75,7 +79,7 @@ The following table lists the configurable parameters of the TodoApp swarm clust
 
   Parameter | Description | Default
   --- | --- | ---
-  `TODO_IMAGE_TAG` | Image tag for Todo-App | `1.0.0`
+  `TODO_IMAGE_TAG` | Image tag for Todo-App | `latest`
   `BASIC_AUTH_ENABLE` | Enable spring Basic-Auth | `false`        
   `BASIC_AUTH_USERNAME` | Username of Basic-Auth | ``                    
   `BASIC_AUTH_PASSWORD` | Password of Basic-Auth | ``                            
