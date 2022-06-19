@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.TransactionException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
@@ -15,17 +16,20 @@ public class TodoExceptionHandler {
   private static final String MY_SQL_UNAVAILABLE = "MySQL Unavailable..";
 
   @ExceptionHandler(Exception.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public @ResponseBody ResponseEntity handleException(final Exception exception) {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
   }
 
   @ExceptionHandler(TodoRuntimeException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   public @ResponseBody ResponseEntity handleTodoRuntimeException(
       final TodoRuntimeException exception) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
   }
 
   @ExceptionHandler(InvalidTodoException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
   public @ResponseBody ResponseEntity handleInvalidTodoException(
       final InvalidTodoException exception) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -34,18 +38,21 @@ public class TodoExceptionHandler {
   }
 
   @ExceptionHandler(EmptyResultDataAccessException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
   public @ResponseBody ResponseEntity handleDataAaccessException(
       final EmptyResultDataAccessException exception) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
   }
 
   @ExceptionHandler(TransactionException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public @ResponseBody ResponseEntity handleConnectionException(
       final TransactionException exception) {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(MY_SQL_UNAVAILABLE);
   }
 
   @ExceptionHandler(PersistenceException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
   public @ResponseBody ResponseEntity handlePersistence(final PersistenceException exception) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
   }

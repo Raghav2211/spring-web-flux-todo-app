@@ -57,6 +57,7 @@ public class TodoRouter {
         beanMethod = "getTodoById",
         operation =
             @Operation(
+                summary = "Get a todo by its id",
                 operationId = "getTodoById",
                 responses = {
                   @ApiResponse(
@@ -87,6 +88,7 @@ public class TodoRouter {
         beanMethod = "updateTodo",
         operation =
             @Operation(
+                summary = "Update todo",
                 operationId = "updateTodo",
                 responses = {
                   @ApiResponse(
@@ -119,6 +121,7 @@ public class TodoRouter {
         beanMethod = "createTodo",
         operation =
             @Operation(
+                summary = "Persist todo",
                 operationId = "createTodo",
                 responses = {
                   @ApiResponse(
@@ -146,6 +149,7 @@ public class TodoRouter {
         beanMethod = "getAllTodo",
         operation =
             @Operation(
+                summary = "Get all todos",
                 operationId = "getAllTodo",
                 responses = {
                   @ApiResponse(
@@ -164,6 +168,7 @@ public class TodoRouter {
         beanMethod = "deleteTodo",
         operation =
             @Operation(
+                summary = "Delete todo by id",
                 operationId = "deleteTodo",
                 responses = {
                   @ApiResponse(

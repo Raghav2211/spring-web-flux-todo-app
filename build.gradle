@@ -32,8 +32,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation group: 'io.springfox', name: 'springfox-swagger2', version: '3.0.0'
-    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-webflux-core' , version: '1.6.9'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-webflux-ui' , version: '1.6.9'
     implementation 'org.springframework.boot:spring-boot-starter-security'
