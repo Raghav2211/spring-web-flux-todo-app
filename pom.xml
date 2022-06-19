@@ -59,7 +59,7 @@
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
-            <artifactId>springfox-boot-starter</artifactId>
+            <artifactId>springfox-swagger2</artifactId>
             <version>${io.springfox.version}</version>
         </dependency>
         <dependency>
