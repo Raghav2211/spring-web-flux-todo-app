@@ -42,7 +42,7 @@ jobs:
       run: docker-compose --env-file=env/ci/Docker.env -f docker-compose.yaml -f env/local/docker-compose-override.yml up -d
     - name: Test local stack
       run: |
-        sleep 5
+        sleep 120
         docker run --network container:todo appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8080/actuator/health
     - name: Failure Result
       if: ${{ failure() }}
