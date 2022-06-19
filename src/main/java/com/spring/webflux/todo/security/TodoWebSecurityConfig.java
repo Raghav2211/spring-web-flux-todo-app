@@ -30,7 +30,7 @@ public class TodoWebSecurityConfig {
     return http.csrf()
         .disable()
         .authorizeExchange()
-        .pathMatchers("/actuator/info", "/actuator/health")
+        .pathMatchers("/actuator/info", "/actuator/health", "/favicon.ico")
         .permitAll()
         .and()
         .authorizeExchange()
