@@ -58,38 +58,5 @@ docker build --build-arg JAR_FILE=build/libs/\*.jar --tag todo:1.0.0 .
 ```
 
 ## Deploy ##
-
-#### Local ####     
-   - Install
-  
-        ```bash
-        docker-compose --env-file=env/<env>/Docker.env up -d
-        #or 
-        # Override default docker-compose configuration
-        docker-compose --env-file=env/<env>/Docker.env -f docker-compose.yaml -f env/<env>/docker-compose-override.yml up -d
-        ```
-   - Uninstall
-  
-        ```bash
-        docker-compose down
-        ```     
-
-#### Environment ####     
+ 
 [Todo Infra](https://github.com/Raghav2211/todo-app-infra)
-        
-## Configuration ## 
-
-The following table lists the configurable parameters of the TodoApp swarm cluster and their default values.
-
-  Parameter | Description | Default
-  --- | --- | ---
-  `TODO_IMAGE_TAG` | Image tag for Todo-App | `latest`
-  `BASIC_AUTH_ENABLE` | Enable spring Basic-Auth | `false`        
-  `BASIC_AUTH_USERNAME` | Username of Basic-Auth | ``                    
-  `BASIC_AUTH_PASSWORD` | Password of Basic-Auth | ``                            
-  `MYSQL_IMAGE_TAG` | Image tag for Mysql | `8.0.22`                                
-  `MYSQL_USER` | Username of new user to create | ``        
-  `MYSQL_PASSWORD` | Password for the new user | ``            
-  `MYSQL_ROOT_PASSWORD` | Password for the root user | ``              
-  `MYSQL_DATABASE` | Name for new database to create | ``                
-  `MYSQL_DATA_SRC_PATH` | Host path for persistence mysql data | ``                    
