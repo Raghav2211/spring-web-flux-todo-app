@@ -36,10 +36,10 @@ jobs:
       run: mvn -B package
     - name: Build local image
       run: |
-        docker build --tag todo .
-        docker build --build-arg JAR_FILE=build/libs/\*.jar --tag todo .
+        docker build --tag todo:1.0.0 .
+        docker build --build-arg JAR_FILE=build/libs/\*.jar --tag todo:1.0.0 .
     - name: Build local stack
-      run: docker-compose --env-file=env/ci/Docker.env -f docker-compose.yaml -f env/local/docker-compose-override.yml up -d
+      run: docker-compose -f ci/docker-compose.yaml up -d
     - name: Test local stack
       run: |
         sleep 120
