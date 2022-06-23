@@ -2,11 +2,15 @@ package com.spring.webflux.todo.dto;
 
 import java.io.Serializable;
 import java.util.Set;
-import lombok.Data;
+import lombok.*;
 
 @Data
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class Section implements Serializable {
   private final String name;
   private Set<Integer> tagIds = Set.of(); // default no tags
-  private Section parent = DefaultSection.DEFAULT.getSection(); // default section as parent section
+
+  @Getter(AccessLevel.NONE)
+  private Integer parentSectionId = DefaultSection.DEFAULT.getId();
 }

@@ -15,6 +15,6 @@ public enum DefaultSection {
   DefaultSection(Integer id) {
     this.id = id;
     tagIds = Set.<Integer>of();
-    section = new Section(this.name().toLowerCase(Locale.ROOT));
+    section = new Section(this.name().toLowerCase(Locale.ROOT), tagIds, null);
   }
 }

@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class TodoResource implements Serializable {
 
-  private final String content;
+  private String content;
   private Integer sectionId = DefaultSection.DEFAULT.getId();
   private Schedule schedule;
   private Boolean isComplete = false;

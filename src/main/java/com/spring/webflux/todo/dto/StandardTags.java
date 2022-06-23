@@ -6,13 +6,15 @@ import lombok.Getter;
 
 @Getter
 public enum StandardTags {
-  IMPORTANT("Todo for important work"),
-  HOME("Tag for home "),
-  WORK("Todo for workplace");
+  IMPORTANT(1, "Todo for important work"),
+  HOME(2, "Tag for home "),
+  WORK(3, "Todo for workplace");
+  private Integer id;
   private String description;
   private Tag tag;
 
-  StandardTags(String description) {
+  StandardTags(Integer id, String description) {
+    this.id = id;
     this.description = description;
     tag = new Tag(this.name().toLowerCase(Locale.ROOT), Optional.of(description));
   }
