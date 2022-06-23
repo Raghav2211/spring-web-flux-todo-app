@@ -24,6 +24,6 @@ public class TodoResource implements Serializable {
   private Set<Tag> tags;
 
   public Set<Tag> getTags() {
-    return ImmutableSet.<Tag>builder().addAll(getTags()).addAll(section.getTags()).build();
+    return ImmutableSet.<Tag>builder().addAll(tags).addAll(section.getTags()).build();
   }
 }
