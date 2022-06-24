@@ -52,7 +52,6 @@ jobs:
       run: |
         tag=${{ env.app_version }}
         message='version ${tag}'
-        git config --global user.name "Raghav2211"
         git tag -a "${tag}" -m "${message}"
         git push https://${{ secrets.TAG_RWD }}@github.com/Raghav2211/spring-web-flux-todo-app.git
         git push origin "${tag}"
