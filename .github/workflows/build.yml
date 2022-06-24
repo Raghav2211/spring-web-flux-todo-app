@@ -57,7 +57,7 @@ jobs:
         tag=${{ env.app_version }}
         message='version ${tag}'
         git config user.name "${GITHUB_ACTOR}"
-        git config user.email "rghvj.22@gmail.com"
+        git config user.email "rustyneo2211@gmail.com"
         git tag -a "${tag}" -m "${message}"
         git push origin "${tag}"
     - name: Login to GitHub Package Registry
