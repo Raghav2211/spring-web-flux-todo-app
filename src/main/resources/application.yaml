@@ -1,0 +1,50 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    health:
+      sensitive: 'false'
+  health:
+    defaults:
+      enabled: 'true'
+    db:
+      enabled: 'true'
+  endpoint:
+    health:
+      show-details: always
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/blog
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    show-sql: 'true'
+    hibernate:
+      ddl-auto: update
+  datasource:
+    driver: com.mysql.jdbc.Driver
+    password: todo
+    hikari:
+      initializationFailTimeout: '60000'
+    username: todo
+    url: jdbc:mysql://localhost:3306/todo
+springdoc:
+  api-docs:
+    groups:
+      enabled: 'true'
+todo:
+  security:
+    basic:
+      auth:
+        username: local
+        password: local
+logging:
+  pattern:
+    console: '%d{dd-MM-yyyy HH:mm:ss} %magenta([%thread]) %highlight(%-5level) %logger.%M
+      - %msg%n'
+server:
+  error:
+    include-message: always
