@@ -12,5 +12,11 @@ public class Section implements Serializable {
   private Set<Integer> tagIds = Set.of(); // default no tags
 
   @Getter(AccessLevel.NONE)
-  private Integer parentSectionId = DefaultSection.DEFAULT.getId();
+  private Integer parentSectionId;
+
+  public Integer getParentSectionId() {
+    return parentSectionId == null || parentSectionId <= 0
+        ? DefaultSection.DEFAULT.getId()
+        : parentSectionId;
+  }
 }

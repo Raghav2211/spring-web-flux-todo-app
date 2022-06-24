@@ -1,32 +1,18 @@
 package com.spring.webflux.todo.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.Date;
-import javax.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
-@Entity
-@Table(name = "todo")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@Document(collection = "todo")
 public class Todo {
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long id;
+  @Id private Integer id;
 
   private String content;
   private Boolean isComplete;
   private Date date;
-
-  @PrePersist
-  public void onPrePersist() {
-    date = new Date();
-  }
-
-  @PreUpdate
-  public void onPreUpdate() {
-    date = new Date();
-  }
 }

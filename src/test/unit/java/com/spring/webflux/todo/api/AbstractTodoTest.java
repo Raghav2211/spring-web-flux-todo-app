@@ -9,7 +9,6 @@ import com.spring.webflux.todo.repository.TodoRepository;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public abstract class AbstractTodoTest {
   private WebTestClient webclient;
@@ -55,7 +56,7 @@ public abstract class AbstractTodoTest {
   @Test
   @WithMockUser
   public void testGetTodoById() {
-    Mockito.when(todoRepository.findById(1l)).thenReturn(Optional.of(todoResponse));
+    Mockito.when(todoRepository.findById(1)).thenReturn(Mono.just(todoResponse));
     webclient
         .get()
         .uri(apiRootPath() + "/1")
@@ -65,7 +66,7 @@ public abstract class AbstractTodoTest {
         .expectBody()
         .jsonPath("$.content")
         .isEqualTo(todoResponse.getContent());
-    Mockito.verify(todoRepository).findById(1l);
+    Mockito.verify(todoRepository).findById(1);
     Mockito.verifyNoMoreInteractions(todoRepository);
   }
 
@@ -73,7 +74,7 @@ public abstract class AbstractTodoTest {
   @Test
   @WithMockUser
   public void testGetTodoByIdNotFound() {
-    Mockito.when(todoRepository.findById(1l)).thenReturn(Optional.empty());
+    Mockito.when(todoRepository.findById(1)).thenReturn(Mono.empty());
     webclient
         .get()
         .uri(apiRootPath() + "/1")
@@ -82,7 +83,7 @@ public abstract class AbstractTodoTest {
         .isNotFound()
         .expectHeader()
         .valueEquals("id", 1);
-    Mockito.verify(todoRepository).findById(1l);
+    Mockito.verify(todoRepository).findById(1);
     Mockito.verifyNoMoreInteractions(todoRepository);
   }
 
@@ -90,7 +91,7 @@ public abstract class AbstractTodoTest {
   @Test
   @WithMockUser
   public void testGetAllTodo() {
-    Mockito.when(todoRepository.findAll()).thenReturn(List.of(todoResponse));
+    Mockito.when(todoRepository.findAll()).thenReturn(Flux.fromIterable(List.of(todoResponse)));
 
     webclient
         .get()
@@ -110,10 +111,10 @@ public abstract class AbstractTodoTest {
   @WithMockUser
   public void testCreateTodo() {
     Todo returnTodo = new Todo();
-    returnTodo.setId(1l);
+    returnTodo.setId(1);
     returnTodo.setContent(todoResponse.getContent());
     returnTodo.setIsComplete(todoResponse.getIsComplete());
-    Mockito.when(todoRepository.save(Mockito.any(Todo.class))).thenReturn(returnTodo);
+    Mockito.when(todoRepository.save(Mockito.any(Todo.class))).thenReturn(Mono.just(returnTodo));
     webclient
         .post()
         .uri(apiRootPath())
@@ -149,11 +150,11 @@ public abstract class AbstractTodoTest {
   @WithMockUser
   public void testUpdateTodo() {
     Todo returnTodo = new Todo();
-    returnTodo.setId(1l);
+    returnTodo.setId(1);
     returnTodo.setContent("DB TODO");
     returnTodo.setIsComplete(true);
-    Mockito.when(todoRepository.findById(1l)).thenReturn(Optional.of(returnTodo));
-    Mockito.when(todoRepository.save(Mockito.any(Todo.class))).thenReturn(returnTodo);
+    Mockito.when(todoRepository.findById(1)).thenReturn(Mono.just(returnTodo));
+    Mockito.when(todoRepository.save(Mockito.any(Todo.class))).thenReturn(Mono.just(returnTodo));
 
     webclient
         .put()
@@ -171,7 +172,7 @@ public abstract class AbstractTodoTest {
         .jsonPath("$.isComplete")
         .isEqualTo(todoRequest.getIsComplete());
 
-    Mockito.verify(todoRepository).findById(1l);
+    Mockito.verify(todoRepository).findById(1);
     Mockito.verify(todoRepository).save(Mockito.any(Todo.class));
     Mockito.verifyNoMoreInteractions(todoRepository);
   }
@@ -180,7 +181,7 @@ public abstract class AbstractTodoTest {
   @Test
   @WithMockUser
   public void testUpdateNonExistTodo() {
-    Mockito.when(todoRepository.findById(1l)).thenReturn(Optional.empty());
+    Mockito.when(todoRepository.findById(1)).thenReturn(Mono.empty());
     webclient
         .put()
         .uri(apiRootPath() + "/1")
@@ -192,7 +193,7 @@ public abstract class AbstractTodoTest {
         .expectHeader()
         .valueEquals("id", 1);
 
-    Mockito.verify(todoRepository).findById(1l);
+    Mockito.verify(todoRepository).findById(1);
     Mockito.verifyNoMoreInteractions(todoRepository);
   }
 
@@ -200,10 +201,9 @@ public abstract class AbstractTodoTest {
   @Test
   @WithMockUser
   public void testDeleteTodo() {
-    Mockito.doNothing().when(todoRepository).deleteById(1l);
-    MediaType MEDIA_TYPE_JSON_UTF8 = MediaType.APPLICATION_JSON;
+    Mockito.when(todoRepository.deleteById(1)).thenReturn(Mono.empty());
     webclient.delete().uri(apiRootPath() + "/1").exchange().expectStatus().isOk();
-    Mockito.verify(todoRepository).deleteById(1l);
+    Mockito.verify(todoRepository).deleteById(1);
     Mockito.verifyNoMoreInteractions(todoRepository);
   }
 

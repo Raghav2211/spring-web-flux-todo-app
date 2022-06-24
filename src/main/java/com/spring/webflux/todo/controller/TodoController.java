@@ -50,7 +50,7 @@ public class TodoController {
             content = {@Content(schema = @Schema)})
       })
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Mono<Todo>> getTodoById(@PathVariable Long id) {
+  public ResponseEntity<Mono<Todo>> getTodoById(@PathVariable Integer id) {
     return new ResponseEntity<Mono<Todo>>(todoService.findById(id), HttpStatus.OK);
   }
 
@@ -120,7 +120,7 @@ public class TodoController {
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Mono<Todo>> updateTodo(
-      @RequestBody Mono<TodoResource> todo, @PathVariable Long id) {
+      @RequestBody Mono<TodoResource> todo, @PathVariable Integer id) {
     return new ResponseEntity<Mono<Todo>>(todoService.update(todo, id), HttpStatus.OK);
   }
 
@@ -146,7 +146,7 @@ public class TodoController {
             content = {@Content(schema = @Schema)})
       })
   @DeleteMapping(value = "/{id}")
-  public ResponseEntity<Mono<Void>> deleteTodo(@PathVariable Long id) {
+  public ResponseEntity<Mono<Void>> deleteTodo(@PathVariable Integer id) {
     var httpHeader = new HttpHeaders();
     httpHeader.add("id", String.valueOf(id));
     return id == null || id < 0

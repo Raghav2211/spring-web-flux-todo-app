@@ -16,21 +16,7 @@ management:
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017/blog
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-    show-sql: 'true'
-    hibernate:
-      ddl-auto: update
-  datasource:
-    driver: com.mysql.jdbc.Driver
-    password: todo
-    hikari:
-      initializationFailTimeout: '60000'
-    username: todo
-    url: jdbc:mysql://localhost:3306/todo
+      uri: mongodb://localhost:27017/todo
 springdoc:
   api-docs:
     groups:

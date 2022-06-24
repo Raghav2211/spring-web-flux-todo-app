@@ -1,6 +1,5 @@
 package com.spring.webflux.todo.exception;
 
-import javax.persistence.PersistenceException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,11 +49,5 @@ public class TodoExceptionHandler {
   public @ResponseBody ResponseEntity handleConnectionException(
       final TransactionException exception) {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(MY_SQL_UNAVAILABLE);
-  }
-
-  @ExceptionHandler(PersistenceException.class)
-  @ResponseStatus(HttpStatus.NOT_FOUND)
-  public @ResponseBody ResponseEntity handlePersistence(final PersistenceException exception) {
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
   }
 }

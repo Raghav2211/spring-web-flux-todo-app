@@ -5,7 +5,6 @@ import com.spring.webflux.todo.entity.Todo;
 import com.spring.webflux.todo.exception.InvalidTodoException;
 import com.spring.webflux.todo.exception.TodoRuntimeException;
 import com.spring.webflux.todo.repository.TodoRepository;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -29,19 +28,16 @@ public class TodoService implements ITodoService {
   public Mono<Todo> create(Mono<TodoResource> todoResourceMono) {
     return validateTodoRequestContent(todoResourceMono)
         .map(this::mapToTodo)
-        .flatMap(
-            todo ->
-                Mono.fromCallable(() -> todoRepository.save(todo))
-                    .subscribeOn(Schedulers.boundedElastic()));
+        .flatMap(todo -> todoRepository.save(todo));
   }
 
-  public Mono<Todo> update(Mono<TodoResource> todoResourceMono, Long id) {
+  public Mono<Todo> update(Mono<TodoResource> todoResourceMono, Integer id) {
     return validateTodoRequestContent(todoResourceMono)
         .flatMap(
             todoResource ->
                 findById(id)
                     .doOnNext(todo -> updateExistingTodo(todo, todoResource))
-                    .map(todo -> todoRepository.save(todo)));
+                    .flatMap(todo -> todoRepository.save(todo)));
   }
 
   private void updateExistingTodo(Todo todo, TodoResource todoResource) {
@@ -49,21 +45,19 @@ public class TodoService implements ITodoService {
     todo.setContent(todoResource.getContent());
   }
 
-  public Mono<Todo> findById(Long id) {
-    return Mono.fromCallable(() -> todoRepository.findById(id))
-        .filter(Optional::isPresent)
-        .map(Optional::get)
+  public Mono<Todo> findById(Integer id) {
+    return todoRepository
+        .findById(id)
         .switchIfEmpty(Mono.error(new InvalidTodoException(id, "Todo not found")))
         .subscribeOn(Schedulers.boundedElastic());
   }
 
   public Flux<Todo> findAll() {
-    return Flux.fromIterable(todoRepository.findAll());
+    return todoRepository.findAll();
   }
 
-  public Mono<Void> delete(Long id) {
-    return Mono.just(id)
-        .flatMap(todoId -> Mono.fromRunnable(() -> todoRepository.deleteById(todoId)));
+  public Mono<Void> delete(Integer id) {
+    return Mono.just(id).flatMap(todoId -> todoRepository.deleteById(todoId));
   }
 
   private Mono<TodoResource> validateTodoRequestContent(Mono<TodoResource> todoResourceMono) {

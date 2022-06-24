@@ -9,11 +9,11 @@ public interface ITodoService {
 
   public Mono<Todo> create(Mono<TodoResource> todo);
 
-  public Mono<Todo> update(Mono<TodoResource> todo, Long id);
+  public Mono<Todo> update(Mono<TodoResource> todo, Integer id);
 
-  public Mono<Todo> findById(Long id);
+  public Mono<Todo> findById(Integer id);
 
   public Flux<Todo> findAll();
 
-  public Mono<Void> delete(Long id);
+  public Mono<Void> delete(Integer id);
 }

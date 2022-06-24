@@ -17,7 +17,6 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 @Component
 @AllArgsConstructor
@@ -33,17 +32,14 @@ public class TodoRouteHandler {
 
   public Mono<ServerResponse> getTodoById(ServerRequest request) {
     return todoService
-        .findById(Long.valueOf(request.pathVariable("id")))
+        .findById(Integer.valueOf(request.pathVariable("id")))
         .flatMap((todo) -> ServerResponse.ok().body(BodyInserters.fromValue(todo)));
   }
 
   public Mono<ServerResponse> createTodo(ServerRequest request) {
     return validateAndGetTodoResource(request)
         .map(this::mapToTodo)
-        .flatMap(
-            todo ->
-                Mono.fromCallable(() -> todoRepository.save(todo))
-                    .subscribeOn(Schedulers.boundedElastic()))
+        .flatMap(todo -> todoRepository.save(todo))
         .flatMap(
             todo ->
                 ServerResponse.created(URI.create("/todo/" + todo.getId()))
@@ -51,15 +47,14 @@ public class TodoRouteHandler {
   }
 
   public Mono<ServerResponse> updateTodo(ServerRequest request) {
-    var id = Long.valueOf(request.pathVariable("id"));
+    var id = Integer.valueOf(request.pathVariable("id"));
     return validateAndGetTodoResource(request)
         .flatMap(
             todoResource ->
                 todoService
                     .findById(id)
                     .doOnNext(todo -> updateExistingTodo(todo, todoResource))
-                    .map(todo -> todoRepository.save(todo))
-                    .subscribeOn(Schedulers.boundedElastic()))
+                    .flatMap(todo -> todoRepository.save(todo)))
         .flatMap(
             todo ->
                 ServerResponse.ok()
@@ -68,7 +63,7 @@ public class TodoRouteHandler {
   }
 
   public Mono<ServerResponse> deleteTodo(ServerRequest request) {
-    var id = Long.valueOf(request.pathVariable("id"));
+    var id = Integer.valueOf(request.pathVariable("id"));
     return todoService
         .delete(id)
         .flatMap(unused -> ServerResponse.ok().build())
