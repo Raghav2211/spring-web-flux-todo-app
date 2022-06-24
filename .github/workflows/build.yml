@@ -54,11 +54,10 @@ jobs:
     - name: Push Tag
       run: |
         tag=${{ env.app_version }}
-        message='version ${tag}'
         git config user.name "${GITHUB_ACTOR}"
         git config user.email "rghvj.22@gmail.com"
         git tag -a "${tag}"
-        git push origin "${tag}" -m "${message}"
+        git push origin "${tag}"
     - name: Login to GitHub Package Registry
       uses: docker/login-action@v1
       if: github.ref == 'refs/heads/master'
