@@ -1,13 +1,9 @@
 version: "3"
 services:
-  mysql:
-    image: mysql:8.0.22
-    container_name: mysql
-    environment:
-      MYSQL_USER: todo
-      MYSQL_DATABASE: todo
-      MYSQL_PASSWORD: todo
-      MYSQL_ROOT_PASSWORD: root
+  mongodb:
+    image: mongo:4.2.21
+    ports:
+      - "27017:27017"
   todo:
     image: todo:1.0.0
     container_name: todo
