@@ -16,7 +16,7 @@ management:
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017/todo
+      uri: mongodb://${MONGO_HOST}:27017/todo
 springdoc:
   api-docs:
     groups:

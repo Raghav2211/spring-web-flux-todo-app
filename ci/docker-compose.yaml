@@ -10,5 +10,6 @@ services:
     ports:
       - "8080:8080"
     environment:
+      MONGO_HOST: mongodb
       TODO_SECURITY_BASIC_AUTH_USERNAME: gitci
       TODO_SECURITY_BASIC_AUTH_PASSWORD: gitci
