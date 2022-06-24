@@ -13,7 +13,7 @@ TODO App uses following technologies:
 * [Springboot-2.7.0] - Open source Java-based Micro-Service framework
 * [OpenApi-1.6.9] - Rest API documentation
 * [Junit-5.7.0] - Unit test
-* [MySql-8.0.22] - Backend data store
+* [MongoDB-4.2.21] - Backend data store
 * [Docker-19.03.8] - OS level virtualization
 
 ## Build ##

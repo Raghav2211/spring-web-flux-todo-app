@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class TodoExceptionHandler {
 
-  private static final String MY_SQL_UNAVAILABLE = "MySQL Unavailable..";
+  private static final String MONGO_UNAVAILABLE = "Mongo Unavailable..";
 
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -48,6 +48,6 @@ public class TodoExceptionHandler {
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public @ResponseBody ResponseEntity handleConnectionException(
       final TransactionException exception) {
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(MY_SQL_UNAVAILABLE);
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(MONGO_UNAVAILABLE);
   }
 }

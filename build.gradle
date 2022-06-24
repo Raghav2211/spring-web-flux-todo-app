@@ -40,7 +40,6 @@ dependencies {
     implementation 'org.springframework.security:spring-security-test'
     implementation 'org.hibernate.validator:hibernate-validator'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'mysql:mysql-connector-java'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
