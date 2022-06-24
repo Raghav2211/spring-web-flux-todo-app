@@ -36,8 +36,8 @@ jobs:
       run: mvn -B package
     - name: Build local image
       run: |
-        docker build --tag todo:1.0.0 .
-        docker build --build-arg JAR_FILE=build/libs/\*.jar --tag todo:1.0.0 .
+        docker build --tag todo:2.0.0 .
+        docker build --build-arg JAR_FILE=build/libs/\*.jar --tag todo:2.0.0 .
     - name: Build local stack
       run: docker-compose -f ci/docker-compose.yaml up -d
     - name: Test local stack
@@ -59,5 +59,5 @@ jobs:
     - name: Docker image push
       if: github.ref == 'refs/heads/master'
       run: |
-        docker tag todo:1.0.0 ghcr.io/raghav2211/spring-web-flux-todo-app/todo
-        docker push ghcr.io/raghav2211/spring-web-flux-todo-app/todo
+        docker tag todo:2.0.0 ghcr.io/raghav2211/spring-web-flux-todo-app/todo:2.0.0
+        docker push ghcr.io/raghav2211/spring-web-flux-todo-app/todo:2.0.0

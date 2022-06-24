@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.spring.webflux.todo'
-version = '1.0.0'
+version = '2.0.0'
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 

@@ -11,7 +11,7 @@
     </parent>
     <groupId>com.spring.webflux.todo</groupId>
     <artifactId>todo</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
     <name>Todo App</name>
     <description>Todo WebFlux Rest API</description>
 

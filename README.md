@@ -43,18 +43,18 @@ or
 ##### Docker image #####
 
 ```bash
-docker pull ghcr.io/raghav2211/spring-web-flux-todo-app/todo
+docker pull ghcr.io/raghav2211/spring-web-flux-todo-app/todo:2.0.0
 ```
 or
 
 ```bash
 
-docker build --tag todo:1.0.0 .
+docker build --tag todo:2.0.0 .
 ```
 If you use Gradle, you can run it with the following command
 
 ```bash
-docker build --build-arg JAR_FILE=build/libs/\*.jar --tag todo:1.0.0 .
+docker build --build-arg JAR_FILE=build/libs/\*.jar --tag todo:2.0.0 .
 ```
 
 ## Deploy ##
