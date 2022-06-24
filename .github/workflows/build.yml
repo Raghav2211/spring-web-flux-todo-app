@@ -52,6 +52,7 @@ jobs:
         docker logs mysql
         docker logs todo
     - name: Push Tag
+      if: github.ref == 'refs/heads/master'
       run: |
         tag=${{ env.app_version }}
         message='version ${tag}'
