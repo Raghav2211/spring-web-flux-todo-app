@@ -13,6 +13,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      app_version: "2.0.0"
     permissions:
       contents: read
     steps:
@@ -36,8 +38,8 @@ jobs:
       run: mvn -B package
     - name: Build local image
       run: |
-        docker build --tag todo:2.0.0 .
-        docker build --build-arg JAR_FILE=build/libs/\*.jar --tag todo:2.0.0 .
+        docker build --tag todo:${{env.app_version}} .
+        docker build --build-arg JAR_FILE=build/libs/\*.jar --tag todo:${{env.app_version}} .
     - name: Build local stack
       run: docker-compose -f ci/docker-compose.yaml up -d
     - name: Test local stack
@@ -59,5 +61,5 @@ jobs:
     - name: Docker image push
       if: github.ref == 'refs/heads/master'
       run: |
-        docker tag todo:2.0.0 ghcr.io/raghav2211/spring-web-flux-todo-app/todo:2.0.0
-        docker push ghcr.io/raghav2211/spring-web-flux-todo-app/todo:2.0.0
+        docker tag todo:${{env.app_version}} ghcr.io/raghav2211/spring-web-flux-todo-app/todo:${{env.app_version}}
+        docker push ghcr.io/raghav2211/spring-web-flux-todo-app/todo:${{env.app_version}}
