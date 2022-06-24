@@ -8,7 +8,7 @@ services:
     image: todo:1.0.0
     container_name: todo
     depends_on:
-      - mysql # will not wait for mysql to be “ready” before starting todo-app , It'll only confirm dependency order &
+      - mongodb # will not wait for mysql to be “ready” before starting todo-app , It'll only confirm dependency order &
       # will automatic create dependencies which include in service defination
     ports:
       - 8080:8080
