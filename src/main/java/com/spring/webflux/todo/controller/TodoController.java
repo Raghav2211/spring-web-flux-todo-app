@@ -1,6 +1,6 @@
 package com.spring.webflux.todo.controller;
 
-import com.spring.webflux.todo.dto.TodoResource;
+import com.spring.webflux.todo.dto.TodoRequest;
 import com.spring.webflux.todo.entity.Todo;
 import com.spring.webflux.todo.service.ITodoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -73,7 +73,7 @@ public class TodoController {
   @PostMapping(
       produces = MediaType.APPLICATION_JSON_VALUE,
       consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Mono<Todo>> createTodo(@RequestBody Mono<TodoResource> requestTodo) {
+  public ResponseEntity<Mono<Todo>> createTodo(@RequestBody Mono<TodoRequest> requestTodo) {
     return new ResponseEntity<Mono<Todo>>(todoService.create(requestTodo), HttpStatus.CREATED);
   }
 
@@ -120,7 +120,7 @@ public class TodoController {
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Mono<Todo>> updateTodo(
-      @RequestBody Mono<TodoResource> todo, @PathVariable Integer id) {
+      @RequestBody Mono<TodoRequest> todo, @PathVariable Integer id) {
     return new ResponseEntity<Mono<Todo>>(todoService.update(todo, id), HttpStatus.OK);
   }
 

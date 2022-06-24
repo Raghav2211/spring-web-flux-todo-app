@@ -3,7 +3,7 @@ package com.spring.webflux.todo.api;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spring.webflux.todo.dto.TodoResource;
+import com.spring.webflux.todo.dto.TodoRequest;
 import com.spring.webflux.todo.entity.Todo;
 import com.spring.webflux.todo.repository.TodoRepository;
 import java.io.File;
@@ -33,8 +33,8 @@ public abstract class AbstractTodoTest {
   @Autowired private ApplicationContext context;
 
   private static Todo todoResponse;
-  private static TodoResource todoRequest;
-  private static TodoResource todoInvalidRequest;
+  private static TodoRequest todoRequest;
+  private static TodoRequest todoInvalidRequest;
 
   @BeforeAll
   @SneakyThrows({JsonParseException.class, JsonMappingException.class, IOException.class})
@@ -42,9 +42,9 @@ public abstract class AbstractTodoTest {
     File resposeFile = new File("src/test/resources/data/todoResponse.json");
     todoResponse = new ObjectMapper().readValue(resposeFile, Todo.class);
     File requestFile = new File("src/test/resources/data/todoRequest.json");
-    todoRequest = new ObjectMapper().readValue(requestFile, TodoResource.class);
+    todoRequest = new ObjectMapper().readValue(requestFile, TodoRequest.class);
     File invalidRequestFile = new File("src/test/resources/data/todoInvalidRequest.json");
-    todoInvalidRequest = new ObjectMapper().readValue(invalidRequestFile, TodoResource.class);
+    todoInvalidRequest = new ObjectMapper().readValue(invalidRequestFile, TodoRequest.class);
   }
 
   @BeforeEach
