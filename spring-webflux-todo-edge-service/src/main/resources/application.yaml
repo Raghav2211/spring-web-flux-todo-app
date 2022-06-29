@@ -1,0 +1,46 @@
+server:
+  port: 8081
+
+logging:
+  level:
+    root: DEBUG
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: todov1
+          uri: http://localhost:8080
+          predicates:
+            - Path=/service/v1/**
+          filters:
+            - TokenRelay=
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/service/v1/(?<segment>.*),/api/v1/$\{segment}
+        - id: todov2
+          uri: http://localhost:8080
+          predicates:
+            - Path=/service/v2/**
+          filters:
+            - TokenRelay=
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/service/v2/(?<segment>.*),/api/v2/$\{segment}
+  security:
+    oauth2:
+      client:
+        registration:
+          gateway:
+            provider: google
+            clientId: ${CLIENT_ID}
+            clientSecret: ${CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid,profile,email
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://www.googleapis.com/oauth2/v4/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+            jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+            issuer-uri: https://accounts.google.com
