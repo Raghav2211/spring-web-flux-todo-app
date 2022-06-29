@@ -32,7 +32,7 @@ hs_err_pid*
 pom.properties
 
 MANIFEST.MF
-/build/
+**/build/
 /bin/
 
 #Remove all public keys 
