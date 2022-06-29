@@ -17,7 +17,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 public class ReactiveGoogleOpaqueTokenIntrospector implements ReactiveOpaqueTokenIntrospector {
-  private Predicate<HttpStatus> is200 = httpStatus -> httpStatus.OK.equals(httpStatus);
+  private final Predicate<HttpStatus> is200 = HttpStatus.OK::equals;
   private static final String UER_PROFILE_SCOPE = "userinfo.profile";
   private static final String UER_EMAIL_SCOPE = "userinfo.email";
   private static final ParameterizedTypeReference<Map<String, Object>> STRING_OBJECT_MAP =
@@ -52,7 +52,7 @@ public class ReactiveGoogleOpaqueTokenIntrospector implements ReactiveOpaqueToke
   private Mono<Map<String, Object>> process(WebClient.ResponseSpec responseSpec) {
     return responseSpec
         .onStatus(
-            httpStatus -> HttpStatus.BAD_REQUEST.equals(httpStatus),
+            HttpStatus.BAD_REQUEST::equals,
             clientResponse ->
                 Mono.error(() -> new BadOpaqueTokenException("Provided token isn't active")))
         .onStatus(
@@ -72,8 +72,8 @@ public class ReactiveGoogleOpaqueTokenIntrospector implements ReactiveOpaqueToke
     claims.computeIfPresent(
         "aud", (k, v) -> v instanceof String ? Collections.singletonList(v) : v);
     claims.computeIfPresent(
-        "exp", (k, v) -> Instant.ofEpochSecond(Long.valueOf(String.valueOf(v))));
-    Collection<GrantedAuthority> authorities = new ArrayList();
+        "exp", (k, v) -> Instant.ofEpochSecond(Long.parseLong(String.valueOf(v))));
+    Collection<GrantedAuthority> authorities = new HashSet<>();
     claims.computeIfPresent(
         "scope",
         (k, v) -> {
@@ -81,10 +81,7 @@ public class ReactiveGoogleOpaqueTokenIntrospector implements ReactiveOpaqueToke
             return v;
           } else {
             Collection<String> scopes = Arrays.asList(((String) v).split(" "));
-            Iterator var4 = scopes.iterator();
-
-            while (var4.hasNext()) {
-              String scope = (String) var4.next();
+            for (String scope : scopes) {
               if (scope.contains(UER_PROFILE_SCOPE) || scope.contains(UER_EMAIL_SCOPE))
                 authorities.add(new SimpleGrantedAuthority("SCOPE_USER"));
             }
