@@ -14,9 +14,14 @@ management:
     health:
       show-details: always
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        opaque-token:
+          introspection-uri: https://oauth2.googleapis.com/tokeninfo
   data:
     mongodb:
-      uri: mongodb://${MONGO_HOST}:27017/todo
+      uri: mongodb://${MONGO_HOST:localhost}:27017/tododb
 springdoc:
   api-docs:
     groups:

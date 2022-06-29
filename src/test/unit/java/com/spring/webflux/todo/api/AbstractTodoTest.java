@@ -112,9 +112,8 @@ public abstract class AbstractTodoTest {
   @WithMockUser
   public void testCreateTodo() {
     Todo returnTodo = new Todo();
-    returnTodo.setId(1);
+    returnTodo.setId("1");
     returnTodo.setContent(todoResponse.getContent());
-    returnTodo.setIsComplete(todoResponse.getIsComplete());
     Mockito.when(todoRepository.save(Mockito.any(Todo.class))).thenReturn(Mono.just(returnTodo));
     webclient
         .post()
@@ -152,9 +151,8 @@ public abstract class AbstractTodoTest {
   @WithMockUser
   public void testUpdateTodo() {
     Todo returnTodo = new Todo();
-    returnTodo.setId(1);
+    returnTodo.setId("1");
     returnTodo.setContent("DB TODO");
-    returnTodo.setIsComplete(true);
     Mockito.when(todoRepository.findById(1)).thenReturn(Mono.just(returnTodo));
     Mockito.when(todoRepository.save(Mockito.any(Todo.class))).thenReturn(Mono.just(returnTodo));
 

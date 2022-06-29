@@ -6,58 +6,39 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 
 @EnableWebFluxSecurity
 @Configuration
 @Slf4j
 public class TodoWebSecurityConfig {
 
-  private static final String USER = "USER";
-
-  @Value(value = "${todo.security.basic.auth.username}")
-  private String basicAuthUserName;
-
-  @Value(value = "${todo.security.basic.auth.password}")
-  private String basicAuthPassWord;
-
   @Bean
-  public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
+  SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
     return http.csrf()
         .disable()
+        .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
         .authorizeExchange()
-        .pathMatchers("/actuator/info", "/actuator/health", "/favicon.ico")
+        .pathMatchers(
+            "/actuator/info",
+            "/actuator/health",
+            "/favicon.ico",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/webjars/**")
         .permitAll()
         .and()
-        .authorizeExchange()
-        .anyExchange()
-        .authenticated()
-        .and()
-        .httpBasic()
-        .and()
-        .formLogin()
-        .and()
+        .authorizeExchange(exchanges -> exchanges.anyExchange().authenticated())
+        .oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::opaqueToken)
         .build();
   }
 
   @Bean
-  public BCryptPasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
-
-  @Bean
-  public MapReactiveUserDetailsService userDetailsService(BCryptPasswordEncoder passwordEncoder) {
-    UserDetails user =
-        User.builder()
-            .username(basicAuthUserName)
-            .password(basicAuthPassWord)
-            .passwordEncoder((password) -> passwordEncoder.encode(password))
-            .roles(USER)
-            .build();
-    return new MapReactiveUserDetailsService(user);
+  public ReactiveOpaqueTokenIntrospector introspector(
+      @Value("${spring.security.oauth2.resourceserver.opaque-token.introspection-uri}")
+          String introspectionUri) {
+    return new GoogleTokenIntrospector(introspectionUri);
   }
 }
