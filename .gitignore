@@ -27,7 +27,7 @@ hs_err_pid*
 *.classpath
 *.project
 .gradle
-!gradle/wrapper/gradle-wrapper.jar
+!**/gradle/wrapper/gradle-wrapper.jar
 
 pom.properties
 
