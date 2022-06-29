@@ -9,10 +9,10 @@ import reactor.core.publisher.Mono;
 
 @SpringBootApplication
 @RestController
-public class SpringWebfluxTodoEdgeApplication {
+public class EdgeApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(SpringWebfluxTodoEdgeApplication.class, args);
+    SpringApplication.run(EdgeApplication.class, args);
   }
 
   @GetMapping("/")
