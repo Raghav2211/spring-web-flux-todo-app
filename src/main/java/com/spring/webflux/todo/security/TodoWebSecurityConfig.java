@@ -39,6 +39,6 @@ public class TodoWebSecurityConfig {
   public ReactiveOpaqueTokenIntrospector introspector(
       @Value("${spring.security.oauth2.resourceserver.opaque-token.introspection-uri}")
           String introspectionUri) {
-    return new GoogleTokenIntrospector(introspectionUri);
+    return new ReactiveGoogleOpaqueTokenIntrospector(introspectionUri);
   }
 }

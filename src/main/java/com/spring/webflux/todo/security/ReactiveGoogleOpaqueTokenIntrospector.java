@@ -3,9 +3,8 @@ package com.spring.webflux.todo.security;
 import java.net.URI;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Predicate;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,18 +13,20 @@ import org.springframework.security.oauth2.server.resource.introspection.BadOpaq
 import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
 import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionException;
 import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector;
-import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-public class GoogleTokenIntrospector implements ReactiveOpaqueTokenIntrospector {
+public class ReactiveGoogleOpaqueTokenIntrospector implements ReactiveOpaqueTokenIntrospector {
+  private Predicate<HttpStatus> is200 = httpStatus -> httpStatus.OK.equals(httpStatus);
+  private static final String UER_PROFILE_SCOPE = "userinfo.profile";
+  private static final String UER_EMAIL_SCOPE = "userinfo.email";
   private static final ParameterizedTypeReference<Map<String, Object>> STRING_OBJECT_MAP =
       new ParameterizedTypeReference<>() {};
   private final String introspectionUri;
 
   private final WebClient webClient;
 
-  public GoogleTokenIntrospector(String introspectionUri) {
+  public ReactiveGoogleOpaqueTokenIntrospector(String introspectionUri) {
     this.introspectionUri = introspectionUri;
     this.webClient = WebClient.builder().build();
   }
@@ -33,35 +34,38 @@ public class GoogleTokenIntrospector implements ReactiveOpaqueTokenIntrospector 
   @Override
   public Mono<OAuth2AuthenticatedPrincipal> introspect(String token) {
     return Mono.just(token)
-        .flatMap(this::makeRequest)
-        .flatMap(this::adaptToNimbusResponse)
+        .map(this::makeRequest)
+        .flatMap(this::process)
         .map(this::convertClaimsSet)
         .onErrorMap((e) -> !(e instanceof OAuth2IntrospectionException), this::onError);
   }
 
-  private Mono<ClientResponse> makeRequest(String token) {
+  private WebClient.ResponseSpec makeRequest(String token) {
     URI uri = URI.create(introspectionUri + "?access_token=" + token);
-    return ((WebClient.RequestBodySpec)
-            ((WebClient.RequestBodySpec) this.webClient.get().uri(uri))
-                .header("Accept", new String[] {"application/json"}))
-        .exchange();
+    return this.webClient
+        .get()
+        .uri(uri)
+        .header("Accept", new String[] {"application/json"})
+        .retrieve();
   }
 
-  private Mono<Map<String, Object>> adaptToNimbusResponse(ClientResponse responseEntity) {
-    return responseEntity.statusCode() != HttpStatus.OK
-        ? responseEntity
-            .bodyToFlux(DataBuffer.class)
-            .map(DataBufferUtils::release)
-            .then(
+  private Mono<Map<String, Object>> process(WebClient.ResponseSpec responseSpec) {
+    return responseSpec
+        .onStatus(
+            httpStatus -> HttpStatus.BAD_REQUEST.equals(httpStatus),
+            clientResponse ->
+                Mono.error(() -> new BadOpaqueTokenException("Provided token isn't active")))
+        .onStatus(
+            Predicate.not(is200),
+            clientResponse ->
                 Mono.error(
-                    new OAuth2IntrospectionException(
-                        "Introspection endpoint responded with " + responseEntity.statusCode())))
-        : responseEntity
-            .bodyToMono(STRING_OBJECT_MAP)
-            .filter((body) -> body.containsKey("expires_in"))
-            .switchIfEmpty(
-                Mono.error(
-                    () -> new BadOpaqueTokenException("Provided token isn't active or invalid")));
+                    () ->
+                        new OAuth2IntrospectionException(
+                            "Introspection endpoint responded with "
+                                + clientResponse.statusCode())))
+        .bodyToMono(STRING_OBJECT_MAP)
+        .filter((body) -> body.containsKey("expires_in"))
+        .switchIfEmpty(Mono.error(() -> new OAuth2IntrospectionException("Invalid token")));
   }
 
   private OAuth2AuthenticatedPrincipal convertClaimsSet(Map<String, Object> claims) {
@@ -69,9 +73,6 @@ public class GoogleTokenIntrospector implements ReactiveOpaqueTokenIntrospector 
         "aud", (k, v) -> v instanceof String ? Collections.singletonList(v) : v);
     claims.computeIfPresent(
         "exp", (k, v) -> Instant.ofEpochSecond(Long.valueOf(String.valueOf(v))));
-    claims.computeIfPresent("iat", (k, v) -> Instant.ofEpochSecond(((Number) v).longValue()));
-    claims.computeIfPresent("iss", (k, v) -> v.toString());
-    claims.computeIfPresent("nbf", (k, v) -> Instant.ofEpochSecond(((Number) v).longValue()));
     Collection<GrantedAuthority> authorities = new ArrayList();
     claims.computeIfPresent(
         "scope",
@@ -84,7 +85,8 @@ public class GoogleTokenIntrospector implements ReactiveOpaqueTokenIntrospector 
 
             while (var4.hasNext()) {
               String scope = (String) var4.next();
-              authorities.add(new SimpleGrantedAuthority("SCOPE_" + scope));
+              if (scope.contains(UER_PROFILE_SCOPE) || scope.contains(UER_EMAIL_SCOPE))
+                authorities.add(new SimpleGrantedAuthority("SCOPE_USER"));
             }
 
             return scopes;
