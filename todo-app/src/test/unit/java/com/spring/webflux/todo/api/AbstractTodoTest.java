@@ -65,8 +65,8 @@ public abstract class AbstractTodoTest {
         .expectStatus()
         .isOk()
         .expectBody()
-        .jsonPath("$.content")
-        .isEqualTo(todoResponse.getContent());
+        .jsonPath("$.task")
+        .isEqualTo(todoResponse.getTask());
     Mockito.verify(todoRepository).findById(1);
     Mockito.verifyNoMoreInteractions(todoRepository);
   }
@@ -113,7 +113,7 @@ public abstract class AbstractTodoTest {
   public void testCreateTodo() {
     Todo returnTodo = new Todo();
     returnTodo.setId("1");
-    returnTodo.setContent(todoResponse.getContent());
+    returnTodo.setTask(todoResponse.getTask());
     Mockito.when(todoRepository.save(Mockito.any(Todo.class))).thenReturn(Mono.just(returnTodo));
     webclient
         .post()
@@ -152,7 +152,7 @@ public abstract class AbstractTodoTest {
   public void testUpdateTodo() {
     Todo returnTodo = new Todo();
     returnTodo.setId("1");
-    returnTodo.setContent("DB TODO");
+    returnTodo.setTask("DB TODO");
     Mockito.when(todoRepository.findById(1)).thenReturn(Mono.just(returnTodo));
     Mockito.when(todoRepository.save(Mockito.any(Todo.class))).thenReturn(Mono.just(returnTodo));
 
@@ -167,8 +167,8 @@ public abstract class AbstractTodoTest {
         .expectBody()
         .jsonPath("$.id")
         .isEqualTo(1)
-        .jsonPath("$.content")
-        .isEqualTo(todoRequest.getContent());
+        .jsonPath("$.task")
+        .isEqualTo(todoRequest.getTask());
 
     Mockito.verify(todoRepository).findById(1);
     Mockito.verify(todoRepository).save(Mockito.any(Todo.class));

@@ -195,6 +195,22 @@ public class TodoRouter {
                 },
                 parameters = {@Parameter(in = ParameterIn.PATH, name = REQUEST_HEADER_ID)},
                 security = {@SecurityRequirement(name = "bearerAuth")})),
+    @RouterOperation(
+        path = "/api/v2/todo/standardTags",
+        method = RequestMethod.GET,
+        beanClass = TodoRouteHandler.class,
+        beanMethod = "getStandardTags",
+        operation =
+            @Operation(
+                summary = "Get standard tags",
+                operationId = "getStandardTags",
+                responses = {
+                  @ApiResponse(
+                      responseCode = "200",
+                      description = "StandardTags retrieved successfully",
+                      content = {@Content(schema = @Schema)})
+                },
+                security = {}))
   })
   public RouterFunction<ServerResponse> route(TodoRouteHandler todoRouteHandler) {
     return nest(
@@ -233,6 +249,7 @@ public class TodoRouter {
                                     .deleteTodo(serverRequest)
                                     .onErrorResume(
                                         InvalidTodoException.class, handleInvalidTodoRequest)))
+                .andRoute(path("/standardTags"), todoRouteHandler::getStandardTags)
                 .andRoute(path("/{id}"), this::badRequest)));
   }
 

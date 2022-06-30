@@ -1,5 +1,6 @@
 package com.spring.webflux.todo.controller;
 
+import com.spring.webflux.todo.dto.StandardTags;
 import com.spring.webflux.todo.dto.TodoRequest;
 import com.spring.webflux.todo.entity.Todo;
 import com.spring.webflux.todo.service.ITodoService;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import java.util.Arrays;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -154,5 +156,19 @@ public class TodoController {
     return id == null || id < 0
         ? new ResponseEntity<Mono<Void>>(httpHeader, HttpStatus.BAD_REQUEST)
         : new ResponseEntity<Mono<Void>>(todoService.delete(id), HttpStatus.OK);
+  }
+
+  @Operation(
+      summary = "Get standard tags",
+      operationId = "getStandardTags",
+      security = {})
+  @ApiResponses(
+      @ApiResponse(
+          responseCode = "200",
+          description = "StandardTags retrieved successfully",
+          content = {@Content(schema = @Schema)}))
+  @GetMapping("/standardTags")
+  public Flux<StandardTags> getStandardTags() {
+    return Flux.fromStream(Arrays.stream(StandardTags.values()));
   }
 }

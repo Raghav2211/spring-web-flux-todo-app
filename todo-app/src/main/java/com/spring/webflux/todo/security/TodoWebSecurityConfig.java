@@ -27,7 +27,8 @@ public class TodoWebSecurityConfig {
             "/favicon.ico",
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/webjars/**")
+            "/webjars/**",
+            "/api/v?/todo/standardTags")
         .permitAll()
         .and()
         .authorizeExchange(exchanges -> exchanges.anyExchange().authenticated())

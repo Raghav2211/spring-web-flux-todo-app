@@ -1,5 +1,6 @@
 package com.spring.webflux.todo.router;
 
+import com.spring.webflux.todo.dto.StandardTags;
 import com.spring.webflux.todo.dto.TodoRequest;
 import com.spring.webflux.todo.entity.Todo;
 import com.spring.webflux.todo.exception.InvalidTodoException;
@@ -7,6 +8,7 @@ import com.spring.webflux.todo.exception.TodoRuntimeException;
 import com.spring.webflux.todo.repository.TodoRepository;
 import com.spring.webflux.todo.service.ITodoService;
 import java.net.URI;
+import java.util.Arrays;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -72,16 +75,22 @@ public class TodoRouteHandler {
             unused -> Mono.error(new InvalidTodoException(id)));
   }
 
+  public Mono<ServerResponse> getStandardTags(ServerRequest request) {
+    return ServerResponse.ok()
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(Flux.fromStream(Arrays.stream(StandardTags.values())), StandardTags.class);
+  }
+
   public Todo mapToTodo(TodoRequest todoResource) {
     Todo todo = new Todo();
-    todo.setContent(todoResource.getContent());
+    todo.setTask(todoResource.getTask());
     return todo;
   }
 
   private Mono<TodoRequest> validateAndGetTodoResource(ServerRequest request) {
     return request
         .bodyToMono(TodoRequest.class)
-        .filter(todoResource -> StringUtils.hasText(todoResource.getContent()))
+        .filter(todoResource -> StringUtils.hasText(todoResource.getTask()))
         .switchIfEmpty(
             Mono.error(
                 new TodoRuntimeException(
@@ -89,6 +98,6 @@ public class TodoRouteHandler {
   }
 
   private void updateExistingTodo(Todo todo, TodoRequest todoResource) {
-    todo.setContent(todoResource.getContent());
+    todo.setTask(todoResource.getTask());
   }
 }

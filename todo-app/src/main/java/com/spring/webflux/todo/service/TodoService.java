@@ -41,7 +41,7 @@ public class TodoService implements ITodoService {
   }
 
   private void updateExistingTodo(Todo todo, TodoRequest todoResource) {
-    todo.setContent(todoResource.getContent());
+    todo.setTask(todoResource.getTask());
   }
 
   public Mono<Todo> findById(Integer id) {
@@ -61,7 +61,7 @@ public class TodoService implements ITodoService {
 
   private Mono<TodoRequest> validateTodoRequestContent(Mono<TodoRequest> todoResourceMono) {
     return todoResourceMono
-        .filter(todoResource -> StringUtils.hasText(todoResource.getContent()))
+        .filter(todoResource -> StringUtils.hasText(todoResource.getTask()))
         .switchIfEmpty(
             Mono.error(
                 new TodoRuntimeException(
@@ -70,7 +70,7 @@ public class TodoService implements ITodoService {
 
   public Todo mapToTodo(TodoRequest todoResource) {
     Todo todo = new Todo();
-    todo.setContent(todoResource.getContent());
+    todo.setTask(todoResource.getTask());
     return todo;
   }
 }
