@@ -22,7 +22,11 @@ public class TodoWebSecurityConfig {
         .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
         .authorizeExchange()
         .pathMatchers(
-            "/actuator/info",
+            // spotless:off
+
+            //"/actuator/info", <-- https://github.com/spring-projects/spring-boot/issues/24205
+
+            // spotless:on
             "/actuator/health",
             "/favicon.ico",
             "/v3/api-docs/**",

@@ -87,6 +87,7 @@ integration {
 
 spotless {
     java {
+        toggleOffOn()
         targetExclude('build/**')
         googleJavaFormat()
     }

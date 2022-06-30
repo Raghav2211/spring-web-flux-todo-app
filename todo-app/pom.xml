@@ -141,6 +141,7 @@
                 </executions>
                 <configuration>
                     <java>
+                        <toggleOffOn></toggleOffOn>
                         <googleJavaFormat>
                             <version>1.7</version>
                         </googleJavaFormat>
