@@ -3,6 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id "com.diffplug.spotless" version "5.11.1"
     id 'java'
+    id "com.gorylenko.gradle-git-properties" version "2.3.2"
 }
 
 group = 'com.spring.webflux.todo'
@@ -97,4 +98,7 @@ jar {
 
 springBoot {
     buildInfo()
+}
+gitProperties {
+    keys = ['git.commit.id','git.branch','git.build.user.email','git.build.version']
 }

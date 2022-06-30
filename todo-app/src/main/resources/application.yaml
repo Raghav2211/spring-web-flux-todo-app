@@ -13,6 +13,9 @@ management:
   endpoint:
     health:
       show-details: always
+  info:
+    git:
+      mode: full
 spring:
   security:
     oauth2:

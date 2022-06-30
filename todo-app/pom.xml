@@ -167,6 +167,21 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <configuration>
+                    <excludeProperties>
+                        <excludeProperty>time</excludeProperty>
+                    </excludeProperties>
+                    <includeOnlyProperties>
+                        <property>git.commit.id</property>
+                        <property>git.branch</property>
+                        <property>git.build.user.email</property>
+                        <property>git.build.version</property>
+                    </includeOnlyProperties>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
