@@ -25,8 +25,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
-import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
@@ -226,7 +224,7 @@ public class TodoRouter {
                     method(HttpMethod.POST),
                     serverRequest ->
                         todoRouteHandler
-                            .createTodo(getAuthenticatedPrincipal(serverRequest), serverRequest)
+                            .createTodo(serverRequest)
                             .onErrorResume(TodoRuntimeException.class, handleInvalidTodoRequest))
                 .andNest(
                     path("/{id:[0-9]+}"),
@@ -250,32 +248,11 @@ public class TodoRouter {
                             method(HttpMethod.DELETE),
                             serverRequest ->
                                 todoRouteHandler
-                                    .deleteTodo(
-                                        getAuthenticatedPrincipal(serverRequest), serverRequest)
+                                    .deleteTodo(serverRequest)
                                     .onErrorResume(
                                         InvalidTodoException.class, handleInvalidTodoRequest)))
                 .andRoute(path("/standardTags"), todoRouteHandler::getStandardTags)
                 .andRoute(path("/{id}"), this::badRequest)));
-  }
-
-  private Mono<OAuth2IntrospectionAuthenticatedPrincipal> getAuthenticatedPrincipal(
-      ServerRequest request) {
-    return request
-        .principal()
-        .filter(
-            principal -> {
-              log.info("Principal {} ", principal);
-              log.info(
-                  "is instance OAuth2AuthenticatedPrincipal {} ",
-                  ((BearerTokenAuthentication) principal).getPrincipal()
-                      instanceof OAuth2IntrospectionAuthenticatedPrincipal);
-              return ((BearerTokenAuthentication) principal).getPrincipal()
-                  instanceof OAuth2IntrospectionAuthenticatedPrincipal;
-            })
-        .cast(BearerTokenAuthentication.class)
-        .map(bearerTokenAuthentication -> bearerTokenAuthentication.getPrincipal())
-        .filter(principal -> principal instanceof OAuth2IntrospectionAuthenticatedPrincipal)
-        .cast(OAuth2IntrospectionAuthenticatedPrincipal.class);
   }
 
   private Mono<ServerResponse> badRequest(ServerRequest request) {

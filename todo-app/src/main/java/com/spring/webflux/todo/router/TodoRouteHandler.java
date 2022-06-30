@@ -14,7 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -42,12 +43,9 @@ public class TodoRouteHandler {
         .flatMap((todo) -> ServerResponse.ok().body(BodyInserters.fromValue(todo)));
   }
 
-  public Mono<ServerResponse> createTodo(
-      Mono<OAuth2IntrospectionAuthenticatedPrincipal> oAuth2IntrospectionAuthenticatedPrincipalMono,
-      ServerRequest request) {
+  public Mono<ServerResponse> createTodo(ServerRequest request) {
 
-    return Mono.zip(
-            oAuth2IntrospectionAuthenticatedPrincipalMono, validateAndGetTodoResource(request))
+    return Mono.zip(getAuthenticatedPrincipal(request), validateAndGetTodoResource(request))
         .flatMap(tuple -> todoRepository.save(mapToTodo(tuple.getT2())))
         .flatMap(
             todo ->
@@ -71,11 +69,9 @@ public class TodoRouteHandler {
                     .body(BodyInserters.fromValue(todo)));
   }
 
-  public Mono<ServerResponse> deleteTodo(
-      Mono<OAuth2IntrospectionAuthenticatedPrincipal> oAuth2IntrospectionAuthenticatedPrincipalMono,
-      ServerRequest request) {
+  public Mono<ServerResponse> deleteTodo(ServerRequest request) {
     var id = Integer.valueOf(request.pathVariable("id"));
-    return oAuth2IntrospectionAuthenticatedPrincipalMono
+    return getAuthenticatedPrincipal(request)
         .flatMap(principal -> todoService.delete(getAuthenticateUserEmail(principal), id))
         .flatMap(unused -> ServerResponse.ok().build())
         .onErrorResume(
@@ -109,8 +105,21 @@ public class TodoRouteHandler {
     todo.setTask(todoResource.getTask());
   }
 
+  private Mono<OAuth2AuthenticatedPrincipal> getAuthenticatedPrincipal(ServerRequest request) {
+    return request
+        .principal()
+        .filter(
+            principal ->
+                ((BearerTokenAuthentication) principal).getPrincipal()
+                    instanceof OAuth2AuthenticatedPrincipal)
+        .cast(BearerTokenAuthentication.class)
+        .map(bearerTokenAuthentication -> bearerTokenAuthentication.getPrincipal())
+        .filter(principal -> principal instanceof OAuth2AuthenticatedPrincipal)
+        .cast(OAuth2AuthenticatedPrincipal.class);
+  }
+
   private String getAuthenticateUserEmail(
-      OAuth2IntrospectionAuthenticatedPrincipal oAuth2AuthenticatedPrincipal) {
+      OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal) {
     return String.valueOf(oAuth2AuthenticatedPrincipal.getAttributes().get("email"));
   }
 }

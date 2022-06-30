@@ -8,7 +8,9 @@ import com.spring.webflux.todo.entity.Todo;
 import com.spring.webflux.todo.repository.TodoRepository;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,13 +21,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public abstract class AbstractTodoTest {
+  public static OAuth2AuthenticatedPrincipal MOCK_AUTHENTICATION_PRINCIPAL =
+      new OAuth2AuthenticatedPrincipal() {
+        @Override
+        public Map<String, Object> getAttributes() {
+          return Map.of("email", "mock@mock.com");
+        }
+
+        @Override
+        public Collection<? extends GrantedAuthority> getAuthorities() {
+          return List.of(new SimpleGrantedAuthority("SCOPE_USER"));
+        }
+
+        @Override
+        public String getName() {
+          return null;
+        }
+      };
+
+  private static BearerTokenAuthentication MOCK_BEARER_TOKEN_AUTHENTICATION =
+      new BearerTokenAuthentication(MOCK_AUTHENTICATION_PRINCIPAL, null, null);
+
   private WebTestClient webclient;
 
   protected abstract String apiRootPath();
@@ -50,7 +78,16 @@ public abstract class AbstractTodoTest {
 
   @BeforeEach
   public void setUp() {
-    webclient = WebTestClient.bindToApplicationContext(context).build();
+
+    webclient =
+        WebTestClient.bindToApplicationContext(context)
+            .apply(SecurityMockServerConfigurers.springSecurity())
+            .configureClient()
+            .build()
+            .mutateWith(
+                SecurityMockServerConfigurers.mockOpaqueToken()
+                    .principal(MOCK_AUTHENTICATION_PRINCIPAL));
+    ;
   }
 
   @SneakyThrows
@@ -59,6 +96,7 @@ public abstract class AbstractTodoTest {
   public void testGetTodoById() {
     Mockito.when(todoRepository.findById(1)).thenReturn(Mono.just(todoResponse));
     webclient
+        .mutateWith(SecurityMockServerConfigurers.mockOpaqueToken())
         .get()
         .uri(apiRootPath() + "/1")
         .exchange()
@@ -109,13 +147,13 @@ public abstract class AbstractTodoTest {
 
   @SneakyThrows
   @Test
-  @WithMockUser
   public void testCreateTodo() {
     Todo returnTodo = new Todo();
     returnTodo.setId("1");
     returnTodo.setTask(todoResponse.getTask());
     Mockito.when(todoRepository.save(Mockito.any(Todo.class))).thenReturn(Mono.just(returnTodo));
     webclient
+        //                .mutateWith(SecurityMockServerConfigurers.mockOpaqueToken())
         .post()
         .uri(apiRootPath())
         .body(BodyInserters.fromValue(todoRequest))
@@ -210,6 +248,7 @@ public abstract class AbstractTodoTest {
   @WithMockUser
   public void testDeleteTodoWithNegativeId() {
     webclient
+        .mutateWith(SecurityMockServerConfigurers.mockOpaqueToken())
         .delete()
         .uri(apiRootPath() + "/-1")
         .exchange()
