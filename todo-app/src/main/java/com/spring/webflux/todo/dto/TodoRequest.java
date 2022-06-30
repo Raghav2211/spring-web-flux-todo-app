@@ -13,8 +13,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Data
 @Scope(scopeName = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class TodoRequest implements Serializable {
-
-  private String userId;
   private String task;
   private Integer sectionId = DefaultSection.DEFAULT.getId();
   private Schedule schedule;

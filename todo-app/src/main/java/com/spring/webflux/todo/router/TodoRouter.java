@@ -18,12 +18,15 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.function.Function;
+import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
+import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
@@ -32,6 +35,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 @Configuration(proxyBeanMethods = false)
+@Slf4j
 public class TodoRouter {
 
   public static final String REQUEST_HEADER_ID = "id";
@@ -222,7 +226,7 @@ public class TodoRouter {
                     method(HttpMethod.POST),
                     serverRequest ->
                         todoRouteHandler
-                            .createTodo(serverRequest)
+                            .createTodo(getAuthenticatedPrincipal(serverRequest), serverRequest)
                             .onErrorResume(TodoRuntimeException.class, handleInvalidTodoRequest))
                 .andNest(
                     path("/{id:[0-9]+}"),
@@ -246,11 +250,32 @@ public class TodoRouter {
                             method(HttpMethod.DELETE),
                             serverRequest ->
                                 todoRouteHandler
-                                    .deleteTodo(serverRequest)
+                                    .deleteTodo(
+                                        getAuthenticatedPrincipal(serverRequest), serverRequest)
                                     .onErrorResume(
                                         InvalidTodoException.class, handleInvalidTodoRequest)))
                 .andRoute(path("/standardTags"), todoRouteHandler::getStandardTags)
                 .andRoute(path("/{id}"), this::badRequest)));
+  }
+
+  private Mono<OAuth2IntrospectionAuthenticatedPrincipal> getAuthenticatedPrincipal(
+      ServerRequest request) {
+    return request
+        .principal()
+        .filter(
+            principal -> {
+              log.info("Principal {} ", principal);
+              log.info(
+                  "is instance OAuth2AuthenticatedPrincipal {} ",
+                  ((BearerTokenAuthentication) principal).getPrincipal()
+                      instanceof OAuth2IntrospectionAuthenticatedPrincipal);
+              return ((BearerTokenAuthentication) principal).getPrincipal()
+                  instanceof OAuth2IntrospectionAuthenticatedPrincipal;
+            })
+        .cast(BearerTokenAuthentication.class)
+        .map(bearerTokenAuthentication -> bearerTokenAuthentication.getPrincipal())
+        .filter(principal -> principal instanceof OAuth2IntrospectionAuthenticatedPrincipal)
+        .cast(OAuth2IntrospectionAuthenticatedPrincipal.class);
   }
 
   private Mono<ServerResponse> badRequest(ServerRequest request) {

@@ -10,9 +10,11 @@ import com.spring.webflux.todo.service.ITodoService;
 import java.net.URI;
 import java.util.Arrays;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -23,6 +25,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class TodoRouteHandler {
   private ITodoService todoService;
   private TodoRepository todoRepository;
@@ -39,10 +42,13 @@ public class TodoRouteHandler {
         .flatMap((todo) -> ServerResponse.ok().body(BodyInserters.fromValue(todo)));
   }
 
-  public Mono<ServerResponse> createTodo(ServerRequest request) {
-    return validateAndGetTodoResource(request)
-        .map(this::mapToTodo)
-        .flatMap(todo -> todoRepository.save(todo))
+  public Mono<ServerResponse> createTodo(
+      Mono<OAuth2IntrospectionAuthenticatedPrincipal> oAuth2IntrospectionAuthenticatedPrincipalMono,
+      ServerRequest request) {
+
+    return Mono.zip(
+            oAuth2IntrospectionAuthenticatedPrincipalMono, validateAndGetTodoResource(request))
+        .flatMap(tuple -> todoRepository.save(mapToTodo(tuple.getT2())))
         .flatMap(
             todo ->
                 ServerResponse.created(URI.create("/todo/" + todo.getId()))
@@ -65,10 +71,12 @@ public class TodoRouteHandler {
                     .body(BodyInserters.fromValue(todo)));
   }
 
-  public Mono<ServerResponse> deleteTodo(ServerRequest request) {
+  public Mono<ServerResponse> deleteTodo(
+      Mono<OAuth2IntrospectionAuthenticatedPrincipal> oAuth2IntrospectionAuthenticatedPrincipalMono,
+      ServerRequest request) {
     var id = Integer.valueOf(request.pathVariable("id"));
-    return todoService
-        .delete(id)
+    return oAuth2IntrospectionAuthenticatedPrincipalMono
+        .flatMap(principal -> todoService.delete(getAuthenticateUserEmail(principal), id))
         .flatMap(unused -> ServerResponse.ok().build())
         .onErrorResume(
             EmptyResultDataAccessException.class,
@@ -99,5 +107,10 @@ public class TodoRouteHandler {
 
   private void updateExistingTodo(Todo todo, TodoRequest todoResource) {
     todo.setTask(todoResource.getTask());
+  }
+
+  private String getAuthenticateUserEmail(
+      OAuth2IntrospectionAuthenticatedPrincipal oAuth2AuthenticatedPrincipal) {
+    return String.valueOf(oAuth2AuthenticatedPrincipal.getAttributes().get("email"));
   }
 }

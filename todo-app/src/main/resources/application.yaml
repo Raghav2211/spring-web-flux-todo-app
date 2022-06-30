@@ -38,6 +38,7 @@ todo:
 logging:
   level:
     reactor.netty.http.client: DEBUG
+    com.spring.webflux.todo: DEBUG
   pattern:
     console: '%d{dd-MM-yyyy HH:mm:ss} %magenta([%thread]) %highlight(%-5level) %logger.%M
       - %msg%n'

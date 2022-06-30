@@ -25,13 +25,13 @@ public class TodoService implements ITodoService {
     this.todoRepository = todoRepository;
   }
 
-  public Mono<Todo> create(Mono<TodoRequest> todoResourceMono) {
+  public Mono<Todo> create(String userId, Mono<TodoRequest> todoResourceMono) {
     return validateTodoRequestContent(todoResourceMono)
         .map(this::mapToTodo)
         .flatMap(todo -> todoRepository.save(todo));
   }
 
-  public Mono<Todo> update(Mono<TodoRequest> todoResourceMono, Integer id) {
+  public Mono<Todo> update(String userId, Mono<TodoRequest> todoResourceMono, Integer id) {
     return validateTodoRequestContent(todoResourceMono)
         .flatMap(
             todoResource ->
@@ -55,7 +55,7 @@ public class TodoService implements ITodoService {
     return todoRepository.findAll();
   }
 
-  public Mono<Void> delete(Integer id) {
+  public Mono<Void> delete(String userId, Integer id) {
     return Mono.just(id).flatMap(todoId -> todoRepository.deleteById(todoId));
   }
 
