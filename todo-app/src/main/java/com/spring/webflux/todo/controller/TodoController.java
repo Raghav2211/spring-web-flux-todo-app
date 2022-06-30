@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +20,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping(value = {"/api/v1/todo"})
+@SecurityRequirement(name = "bearerAuth")
 public class TodoController {
   public static final String REQUEST_HEADER_ID = "id";
   private ITodoService todoService;

@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.function.Function;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
@@ -79,7 +80,8 @@ public class TodoRouter {
                       description = "Unauthorized",
                       content = {@Content(schema = @Schema)})
                 },
-                parameters = {@Parameter(in = ParameterIn.PATH, name = REQUEST_HEADER_ID)})),
+                parameters = {@Parameter(in = ParameterIn.PATH, name = REQUEST_HEADER_ID)},
+                security = {@SecurityRequirement(name = "bearerAuth")})),
     @RouterOperation(
         path = "/api/v2/todo/{id}",
         produces = {MediaType.APPLICATION_JSON_VALUE},
@@ -112,7 +114,8 @@ public class TodoRouter {
                 requestBody =
                     @RequestBody(
                         content = @Content(schema = @Schema(implementation = TodoRequest.class))),
-                parameters = {@Parameter(in = ParameterIn.PATH, name = REQUEST_HEADER_ID)})),
+                parameters = {@Parameter(in = ParameterIn.PATH, name = REQUEST_HEADER_ID)},
+                security = {@SecurityRequirement(name = "bearerAuth")})),
     @RouterOperation(
         path = "/api/v2/todo",
         produces = {MediaType.APPLICATION_JSON_VALUE},
@@ -139,7 +142,8 @@ public class TodoRouter {
                 },
                 requestBody =
                     @RequestBody(
-                        content = @Content(schema = @Schema(implementation = TodoRequest.class))))),
+                        content = @Content(schema = @Schema(implementation = TodoRequest.class))),
+                security = {@SecurityRequirement(name = "bearerAuth")})),
     @RouterOperation(
         path = "/api/v2/todo",
         produces = {MediaType.APPLICATION_JSON_VALUE},
@@ -159,7 +163,8 @@ public class TodoRouter {
                       responseCode = "401",
                       description = "Unauthorized",
                       content = {@Content(schema = @Schema)})
-                })),
+                },
+                security = {@SecurityRequirement(name = "bearerAuth")})),
     @RouterOperation(
         path = "/api/v2/todo/{id}",
         method = RequestMethod.DELETE,
@@ -188,7 +193,8 @@ public class TodoRouter {
                       description = "Unauthorized",
                       content = {@Content(schema = @Schema)})
                 },
-                parameters = {@Parameter(in = ParameterIn.PATH, name = REQUEST_HEADER_ID)})),
+                parameters = {@Parameter(in = ParameterIn.PATH, name = REQUEST_HEADER_ID)},
+                security = {@SecurityRequirement(name = "bearerAuth")})),
   })
   public RouterFunction<ServerResponse> route(TodoRouteHandler todoRouteHandler) {
     return nest(
