@@ -4,8 +4,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 import static org.springframework.web.reactive.function.server.RouterFunctions.*;
 
-import com.spring.webflux.todo.dto.TodoRequest;
-import com.spring.webflux.todo.entity.Todo;
+import com.spring.webflux.todo.dto.request.Request;
+import com.spring.webflux.todo.entity.UserTodoList;
 import com.spring.webflux.todo.exception.InvalidTodoException;
 import com.spring.webflux.todo.exception.TodoRuntimeException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -66,7 +66,7 @@ public class TodoRouter {
                   @ApiResponse(
                       responseCode = "200",
                       description = "Retrieved todo successfully",
-                      content = @Content(schema = @Schema(implementation = Todo.class))),
+                      content = @Content(schema = @Schema(implementation = UserTodoList.class))),
                   @ApiResponse(
                       responseCode = "404",
                       description = "Todo not found",
@@ -98,7 +98,7 @@ public class TodoRouter {
                   @ApiResponse(
                       responseCode = "200",
                       description = "Todo successfully updated",
-                      content = @Content(schema = @Schema(implementation = Todo.class))),
+                      content = @Content(schema = @Schema(implementation = UserTodoList.class))),
                   @ApiResponse(
                       responseCode = "404",
                       description = "Todo not found",
@@ -115,7 +115,7 @@ public class TodoRouter {
                 },
                 requestBody =
                     @RequestBody(
-                        content = @Content(schema = @Schema(implementation = TodoRequest.class))),
+                        content = @Content(schema = @Schema(implementation = Request.class))),
                 parameters = {@Parameter(in = ParameterIn.PATH, name = REQUEST_HEADER_ID)},
                 security = {@SecurityRequirement(name = "bearerAuth")})),
     @RouterOperation(
@@ -132,7 +132,7 @@ public class TodoRouter {
                   @ApiResponse(
                       responseCode = "201",
                       description = "Todo successfully created",
-                      content = @Content(schema = @Schema(implementation = Todo.class))),
+                      content = @Content(schema = @Schema(implementation = UserTodoList.class))),
                   @ApiResponse(
                       responseCode = "400",
                       description = "Bad Request",
@@ -144,7 +144,7 @@ public class TodoRouter {
                 },
                 requestBody =
                     @RequestBody(
-                        content = @Content(schema = @Schema(implementation = TodoRequest.class))),
+                        content = @Content(schema = @Schema(implementation = Request.class))),
                 security = {@SecurityRequirement(name = "bearerAuth")})),
     @RouterOperation(
         path = "/api/v2/todo",
@@ -160,7 +160,7 @@ public class TodoRouter {
                   @ApiResponse(
                       responseCode = "200",
                       description = "Retrieved all todos",
-                      content = @Content(schema = @Schema(implementation = Todo.class))),
+                      content = @Content(schema = @Schema(implementation = UserTodoList.class))),
                   @ApiResponse(
                       responseCode = "401",
                       description = "Unauthorized",

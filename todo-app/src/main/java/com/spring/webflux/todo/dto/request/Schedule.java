@@ -1,4 +1,4 @@
-package com.spring.webflux.todo.dto;
+package com.spring.webflux.todo.dto.request;
 
 import java.io.Serializable;
 import java.time.DayOfWeek;

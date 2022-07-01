@@ -31,6 +31,7 @@ repositories {
 
 dependencies {
     implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+    implementation 'org.mapstruct:mapstruct:1.5.2.Final'
     implementation("com.google.guava:guava:31.1-jre")
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -40,6 +41,9 @@ dependencies {
     implementation group: 'org.springdoc', name: 'springdoc-openapi-webflux-ui' , version: '1.6.9'
     implementation 'org.springframework.security:spring-security-test'
     implementation 'org.hibernate.validator:hibernate-validator'
+
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
+
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

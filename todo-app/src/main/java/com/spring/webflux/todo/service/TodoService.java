@@ -1,7 +1,7 @@
 package com.spring.webflux.todo.service;
 
-import com.spring.webflux.todo.dto.TodoRequest;
-import com.spring.webflux.todo.entity.Todo;
+import com.spring.webflux.todo.dto.request.Request;
+import com.spring.webflux.todo.entity.UserTodoList;
 import com.spring.webflux.todo.exception.InvalidTodoException;
 import com.spring.webflux.todo.exception.TodoRuntimeException;
 import com.spring.webflux.todo.repository.TodoRepository;
@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -25,13 +24,13 @@ public class TodoService implements ITodoService {
     this.todoRepository = todoRepository;
   }
 
-  public Mono<Todo> create(String userId, Mono<TodoRequest> todoResourceMono) {
+  public Mono<UserTodoList> create(String userId, Mono<Request> todoResourceMono) {
     return validateTodoRequestContent(todoResourceMono)
         .map(this::mapToTodo)
         .flatMap(todo -> todoRepository.save(todo));
   }
 
-  public Mono<Todo> update(String userId, Mono<TodoRequest> todoResourceMono, Integer id) {
+  public Mono<UserTodoList> update(String userId, Mono<Request> todoResourceMono, Integer id) {
     return validateTodoRequestContent(todoResourceMono)
         .flatMap(
             todoResource ->
@@ -40,18 +39,18 @@ public class TodoService implements ITodoService {
                     .flatMap(todo -> todoRepository.save(todo)));
   }
 
-  private void updateExistingTodo(Todo todo, TodoRequest todoResource) {
-    todo.setTask(todoResource.getTask());
+  private void updateExistingTodo(UserTodoList todo, Request todoResource) {
+    //    todo.setTask(todoResource.getTask());
   }
 
-  public Mono<Todo> findById(Integer id) {
+  public Mono<UserTodoList> findById(Integer id) {
     return todoRepository
         .findById(id)
         .switchIfEmpty(Mono.error(new InvalidTodoException(id, "Todo not found")))
         .subscribeOn(Schedulers.boundedElastic());
   }
 
-  public Flux<Todo> findAll() {
+  public Flux<UserTodoList> findAll() {
     return todoRepository.findAll();
   }
 
@@ -59,18 +58,18 @@ public class TodoService implements ITodoService {
     return Mono.just(id).flatMap(todoId -> todoRepository.deleteById(todoId));
   }
 
-  private Mono<TodoRequest> validateTodoRequestContent(Mono<TodoRequest> todoResourceMono) {
+  private Mono<Request> validateTodoRequestContent(Mono<Request> todoResourceMono) {
     return todoResourceMono
-        .filter(todoResource -> StringUtils.hasText(todoResource.getTask()))
+        //        .filter(todoResource -> StringUtils.hasText(todoResource.getTask()))
         .switchIfEmpty(
-            Mono.error(
-                new TodoRuntimeException(
-                    HttpStatus.BAD_REQUEST, String.format("Todo content cannot be empty"))));
+        Mono.error(
+            new TodoRuntimeException(
+                HttpStatus.BAD_REQUEST, String.format("Todo content cannot be empty"))));
   }
 
-  public Todo mapToTodo(TodoRequest todoResource) {
-    Todo todo = new Todo();
-    todo.setTask(todoResource.getTask());
+  public UserTodoList mapToTodo(Request todoResource) {
+    UserTodoList todo = new UserTodoList();
+    //    todo.setTask(todoResource.getTask());
     return todo;
   }
 }

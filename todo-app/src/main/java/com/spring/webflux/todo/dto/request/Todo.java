@@ -1,4 +1,4 @@
-package com.spring.webflux.todo.entity;
+package com.spring.webflux.todo.dto.request;
 
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -12,5 +12,6 @@ import lombok.RequiredArgsConstructor;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Todo {
   @EqualsAndHashCode.Include private final String task;
+  @EqualsAndHashCode.Include private Schedule schedule;
   private Set<String> tags;
 }

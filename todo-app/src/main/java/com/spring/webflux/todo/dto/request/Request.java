@@ -1,9 +1,8 @@
-package com.spring.webflux.todo.dto;
+package com.spring.webflux.todo.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
-import java.util.Set;
 import lombok.Data;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -12,14 +11,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @Scope(scopeName = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class TodoRequest implements Serializable {
-  private String task;
-  private Integer sectionId = DefaultSection.DEFAULT.getId();
-  private Schedule schedule;
-  private Set<String> tagIds;
-  private Boolean inheritParentSectionTags = false;
-
-  private boolean isDefaultSection() {
-    return sectionId == null;
-  }
+public class Request implements Serializable {
+  private Section section;
 }

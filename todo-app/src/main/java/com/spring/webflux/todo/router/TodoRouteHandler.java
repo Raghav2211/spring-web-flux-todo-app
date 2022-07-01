@@ -1,8 +1,8 @@
 package com.spring.webflux.todo.router;
 
 import com.spring.webflux.todo.dto.StandardTags;
-import com.spring.webflux.todo.dto.TodoRequest;
-import com.spring.webflux.todo.entity.Todo;
+import com.spring.webflux.todo.dto.request.Request;
+import com.spring.webflux.todo.entity.UserTodoList;
 import com.spring.webflux.todo.exception.InvalidTodoException;
 import com.spring.webflux.todo.exception.TodoRuntimeException;
 import com.spring.webflux.todo.repository.TodoRepository;
@@ -17,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -34,7 +33,7 @@ public class TodoRouteHandler {
   public Mono<ServerResponse> getAllTodo(ServerRequest request) {
     return ServerResponse.ok()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(todoService.findAll(), Todo.class);
+        .body(todoService.findAll(), UserTodoList.class);
   }
 
   public Mono<ServerResponse> getTodoById(ServerRequest request) {
@@ -85,24 +84,25 @@ public class TodoRouteHandler {
         .body(Flux.fromStream(Arrays.stream(StandardTags.values())), StandardTags.class);
   }
 
-  public Todo mapToTodo(TodoRequest todoResource) {
-    Todo todo = new Todo();
-    todo.setTask(todoResource.getTask());
+  public UserTodoList mapToTodo(Request todoResource) {
+    UserTodoList todo = new UserTodoList();
+    //    todo.setTask(todoResource.getTask());
     return todo;
   }
 
-  private Mono<TodoRequest> validateAndGetTodoResource(ServerRequest request) {
+  private Mono<Request> validateAndGetTodoResource(ServerRequest request) {
     return request
-        .bodyToMono(TodoRequest.class)
-        .filter(todoResource -> StringUtils.hasText(todoResource.getTask()))
+        .bodyToMono(Request.class)
+        //        .filter(todoResource -> StringUtils.hasText(todoResource.getTask()))
         .switchIfEmpty(
             Mono.error(
                 new TodoRuntimeException(
                     HttpStatus.BAD_REQUEST, String.format("Todo content cannot be empty"))));
   }
 
-  private void updateExistingTodo(Todo todo, TodoRequest todoResource) {
-    todo.setTask(todoResource.getTask());
+  private void updateExistingTodo(UserTodoList todo, Request todoResource) {
+    //    todo.setTask(todoResource.getTask());
+
   }
 
   private Mono<OAuth2AuthenticatedPrincipal> getAuthenticatedPrincipal(ServerRequest request) {
