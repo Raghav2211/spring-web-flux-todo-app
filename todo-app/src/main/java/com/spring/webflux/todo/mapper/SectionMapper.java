@@ -1,6 +1,7 @@
 package com.spring.webflux.todo.mapper;
 
 import com.spring.webflux.todo.dto.request.SectionRequest;
+import com.spring.webflux.todo.dto.response.SectionResponse;
 import com.spring.webflux.todo.entity.Section;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,4 +17,6 @@ public interface SectionMapper {
     @Mapping(target = "userId", source = "userId")
   })
   Section requestToEntity(String userId, SectionRequest request);
+
+  SectionResponse entityToResponse(Section section);
 }

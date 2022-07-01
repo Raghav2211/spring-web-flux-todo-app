@@ -13,7 +13,7 @@ import org.springframework.security.web.server.context.NoOpServerSecurityContext
 @EnableWebFluxSecurity
 @Configuration
 @Slf4j
-public class TodoWebSecurityConfig {
+public class SecurityConfig {
 
   @Bean
   SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {

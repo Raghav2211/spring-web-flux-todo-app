@@ -1,32 +1,33 @@
 package com.spring.webflux.todo.controller;
 
 import com.spring.webflux.todo.dto.request.SectionRequest;
+import com.spring.webflux.todo.dto.response.SectionResponse;
 import com.spring.webflux.todo.exception.InvalidSectionRuntimeException;
+import com.spring.webflux.todo.mapper.SectionMapper;
 import com.spring.webflux.todo.repository.SectionRepository;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping(value = {"/api/v1/section"})
 @SecurityRequirement(name = "bearerAuth")
+@RequiredArgsConstructor
 public class SectionController {
-  @Autowired private SectionRepository sectionRepository;
+  private final SectionRepository sectionRepository;
 
   @PostMapping(
       produces = MediaType.APPLICATION_JSON_VALUE,
       consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Mono<Void>> createSection(
+  public ResponseEntity<Mono<SectionResponse>> createSection(
       @Parameter(hidden = true) @AuthenticationPrincipal
           OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal,
       @RequestBody Mono<SectionRequest> requestMono) {
@@ -35,15 +36,24 @@ public class SectionController {
             .flatMap(
                 sectionRequest ->
                     sectionRepository
-                        .addSection(
-                            getAuthenticateUserEmail(oAuth2AuthenticatedPrincipal),
-                            sectionRequest.getName())
-                        .filter(data -> data)
+                        .save(
+                            SectionMapper.INSTANCE.requestToEntity(
+                                getAuthenticateUserEmail(oAuth2AuthenticatedPrincipal),
+                                sectionRequest))
                         .switchIfEmpty(
                             Mono.error(
                                 new InvalidSectionRuntimeException(sectionRequest.getName()))))
-            .then();
-    return new ResponseEntity<Mono<Void>>(addSectionRequest, HttpStatus.CREATED);
+            .map(section -> SectionMapper.INSTANCE.entityToResponse(section));
+    return new ResponseEntity<Mono<SectionResponse>>(addSectionRequest, HttpStatus.CREATED);
+  }
+
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+  public Flux<SectionResponse> getAllSectionByUser(
+      @Parameter(hidden = true) @AuthenticationPrincipal
+          OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal) {
+    return sectionRepository
+        .findByUserId(getAuthenticateUserEmail(oAuth2AuthenticatedPrincipal))
+        .map(section -> SectionMapper.INSTANCE.entityToResponse(section));
   }
 
   private String getAuthenticateUserEmail(
