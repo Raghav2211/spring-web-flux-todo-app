@@ -41,11 +41,10 @@ dependencies {
     implementation group: 'org.springdoc', name: 'springdoc-openapi-webflux-ui' , version: '1.6.9'
     implementation 'org.springframework.security:spring-security-test'
     implementation 'org.hibernate.validator:hibernate-validator'
-
+    implementation 'org.projectlombok:lombok'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: '0.2.0'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
-
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
@@ -78,8 +77,12 @@ task integration(type: Test) {
 }
 check.dependsOn integration
 
-compileJava.dependsOn 'spotlessApply'
-
+//compileJava.dependsOn 'spotlessApply'
+compileJava {
+    options.compilerArgs += [
+            '-Amapstruct.defaultComponentModel=spring'
+    ]
+}
 integration {
     environment "AWS_REGION", "eu-west-1"
     useJUnitPlatform()

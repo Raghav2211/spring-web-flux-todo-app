@@ -1,17 +1,23 @@
 package com.spring.webflux.todo.dto.request;
 
+import java.util.Optional;
 import java.util.Set;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
+import java.util.stream.Collectors;
+import lombok.*;
 
 @Data
-@AllArgsConstructor
-@RequiredArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Todo {
-  @EqualsAndHashCode.Include private final String task;
+
+  @EqualsAndHashCode.Include private String task;
   @EqualsAndHashCode.Include private Schedule schedule;
-  private Set<String> tags;
+
+  @Getter(AccessLevel.NONE)
+  private Set<String> tags = Set.of();
+
+  public Set<String> getTags() {
+    return Optional.ofNullable(tags).orElseGet(() -> Set.of()).stream()
+        .map(String::toUpperCase)
+        .collect(Collectors.toSet());
+  }
 }

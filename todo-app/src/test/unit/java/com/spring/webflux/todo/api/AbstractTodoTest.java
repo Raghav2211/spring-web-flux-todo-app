@@ -75,9 +75,9 @@ public abstract class AbstractTodoTest {
   public static void beforeClass() {
     File resposeFile = new File("src/test/resources/data/todoResponse.json");
     todoResponse = new ObjectMapper().readValue(resposeFile, UserTodoList.class);
-    File requestFile = new File("src/test/resources/data/todoRequest.json");
+    File requestFile = new File("src/test/resources/data/request.json");
     todoRequest = new ObjectMapper().readValue(requestFile, Request.class);
-    File invalidRequestFile = new File("src/test/resources/data/todoInvalidRequest.json");
+    File invalidRequestFile = new File("src/test/resources/data/invalidRequest.json");
     todoInvalidRequest = new ObjectMapper().readValue(invalidRequestFile, Request.class);
   }
 

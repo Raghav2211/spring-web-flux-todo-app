@@ -37,6 +37,13 @@ public class TodoExceptionHandler {
         .body(exception.getMessage());
   }
 
+  @ExceptionHandler(InvalidSectionRuntimeException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public @ResponseBody ResponseEntity handleInvalidTodoException(
+      final InvalidSectionRuntimeException exception) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception);
+  }
+
   @ExceptionHandler(EmptyResultDataAccessException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
   public @ResponseBody ResponseEntity handleDataAaccessException(
