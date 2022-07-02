@@ -25,6 +25,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
@@ -256,7 +258,8 @@ public class TodoRouter {
                       responseCode = "200",
                       description = "StandardTags retrieved successfully",
                       content = {@Content(schema = @Schema)})
-                }))
+                },
+                security = {@SecurityRequirement(name = "bearerAuth")}))
   })
   public RouterFunction<ServerResponse> route(TodoRouteHandler todoRouteHandler) {
     return nest(
@@ -266,12 +269,16 @@ public class TodoRouter {
             RouterFunctions.route(
                     GET(""),
                     serverRequest ->
-                        todoRouteHandler.getAllTodo(getSectionId(serverRequest), serverRequest))
+                        todoRouteHandler.getAllTodo(
+                            getAuthenticatedPrincipal(serverRequest), getSectionId(serverRequest)))
                 .andRoute(
                     method(HttpMethod.POST),
                     serverRequest ->
                         todoRouteHandler
-                            .createTodo(getSectionId(serverRequest), serverRequest)
+                            .createTodo(
+                                getAuthenticatedPrincipal(serverRequest),
+                                getSectionId(serverRequest),
+                                serverRequest)
                             .onErrorResume(TodoRuntimeException.class, handleInvalidTodoRequest))
                 .andNest(
                     path("/{id:[0-9]+}"),
@@ -280,9 +287,9 @@ public class TodoRouter {
                             serverRequest ->
                                 todoRouteHandler
                                     .getTodoById(
+                                        getAuthenticatedPrincipal(serverRequest),
                                         getSectionId(serverRequest),
-                                        getTodoId(serverRequest),
-                                        serverRequest)
+                                        getTodoId(serverRequest))
                                     .onErrorResume(
                                         InvalidTodoException.class, handleInvalidTodoRequest))
                         .andRoute(
@@ -290,6 +297,7 @@ public class TodoRouter {
                             serverRequest ->
                                 todoRouteHandler
                                     .updateTodo(
+                                        getAuthenticatedPrincipal(serverRequest),
                                         getSectionId(serverRequest),
                                         getTodoId(serverRequest),
                                         serverRequest)
@@ -302,12 +310,13 @@ public class TodoRouter {
                             serverRequest ->
                                 todoRouteHandler
                                     .deleteTodo(
+                                        getAuthenticatedPrincipal(serverRequest),
                                         getSectionId(serverRequest),
-                                        getTodoId(serverRequest),
-                                        serverRequest)
+                                        getTodoId(serverRequest))
                                     .onErrorResume(
                                         InvalidTodoException.class, handleInvalidTodoRequest)))
-                .andRoute(path("/standardTags"), todoRouteHandler::getStandardTags)
+                .andRoute(
+                    path("/standardTags"), serverRequest -> todoRouteHandler.getStandardTags())
                 .andRoute(path("/{id}"), this::badRequest)));
   }
 
@@ -317,6 +326,19 @@ public class TodoRouter {
             httpHeaders ->
                 httpHeaders.add(REQUEST_HEADER_ID, request.pathVariable(REQUEST_HEADER_ID)))
         .build();
+  }
+
+  private Mono<OAuth2AuthenticatedPrincipal> getAuthenticatedPrincipal(ServerRequest request) {
+    return request
+        .principal()
+        .filter(
+            principal ->
+                ((BearerTokenAuthentication) principal).getPrincipal()
+                    instanceof OAuth2AuthenticatedPrincipal)
+        .cast(BearerTokenAuthentication.class)
+        .map(bearerTokenAuthentication -> bearerTokenAuthentication.getPrincipal())
+        .filter(principal -> principal instanceof OAuth2AuthenticatedPrincipal)
+        .cast(OAuth2AuthenticatedPrincipal.class);
   }
 
   private String getSectionId(ServerRequest request) {

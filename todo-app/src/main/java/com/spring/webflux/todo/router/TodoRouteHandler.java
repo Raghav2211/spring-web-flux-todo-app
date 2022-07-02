@@ -9,6 +9,7 @@ import com.spring.webflux.todo.exception.TodoRuntimeException;
 import com.spring.webflux.todo.mapper.TodoMapper;
 import com.spring.webflux.todo.repository.SectionRepository;
 import com.spring.webflux.todo.repository.TodoRepository;
+import io.swagger.v3.oas.annotations.Parameter;
 import java.net.URI;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
-import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -32,8 +32,10 @@ public class TodoRouteHandler {
   private final TodoRepository todoRepository;
   private final SectionRepository sectionRepository;
 
-  public Mono<ServerResponse> getAllTodo(String sectionId, ServerRequest request) {
-    return getAuthenticatedPrincipal(request)
+  public Mono<ServerResponse> getAllTodo(
+      @Parameter(hidden = true) Mono<OAuth2AuthenticatedPrincipal> oAuth2AuthenticatedPrincipalMono,
+      String sectionId) {
+    return oAuth2AuthenticatedPrincipalMono
         .flatMap(
             oAuth2AuthenticatedPrincipal ->
                 isSectionValid(getAuthenticateUserEmail(oAuth2AuthenticatedPrincipal), sectionId))
@@ -44,8 +46,11 @@ public class TodoRouteHandler {
                     .body(todoRepository.findAllBySectionId(sectionId), TodoResponse.class));
   }
 
-  public Mono<ServerResponse> getTodoById(String sectionId, String todoId, ServerRequest request) {
-    return getAuthenticatedPrincipal(request)
+  public Mono<ServerResponse> getTodoById(
+      @Parameter(hidden = true) Mono<OAuth2AuthenticatedPrincipal> oAuth2AuthenticatedPrincipalMono,
+      String sectionId,
+      String todoId) {
+    return oAuth2AuthenticatedPrincipalMono
         .flatMap(
             oAuth2AuthenticatedPrincipal ->
                 isSectionValid(getAuthenticateUserEmail(oAuth2AuthenticatedPrincipal), sectionId))
@@ -54,8 +59,11 @@ public class TodoRouteHandler {
         .flatMap(todoResponse -> ServerResponse.ok().body(BodyInserters.fromValue(todoResponse)));
   }
 
-  public Mono<ServerResponse> createTodo(String sectionId, ServerRequest request) {
-    return getAuthenticatedPrincipal(request)
+  public Mono<ServerResponse> createTodo(
+      @Parameter(hidden = true) Mono<OAuth2AuthenticatedPrincipal> oAuth2AuthenticatedPrincipalMono,
+      String sectionId,
+      ServerRequest request) {
+    return oAuth2AuthenticatedPrincipalMono
         .flatMap(
             oAuth2AuthenticatedPrincipal ->
                 validateAndGetTodoRequest(
@@ -69,8 +77,12 @@ public class TodoRouteHandler {
                     .body(BodyInserters.fromValue(todo)));
   }
 
-  public Mono<ServerResponse> updateTodo(String sectionId, String id, ServerRequest request) {
-    return getAuthenticatedPrincipal(request)
+  public Mono<ServerResponse> updateTodo(
+      @Parameter(hidden = true) Mono<OAuth2AuthenticatedPrincipal> oAuth2AuthenticatedPrincipalMono,
+      String sectionId,
+      String id,
+      ServerRequest request) {
+    return oAuth2AuthenticatedPrincipalMono
         .flatMap(
             oAuth2AuthenticatedPrincipal ->
                 validateAndGetTodoRequest(
@@ -93,8 +105,11 @@ public class TodoRouteHandler {
                     .body(BodyInserters.fromValue(todoResponse)));
   }
 
-  public Mono<ServerResponse> deleteTodo(String sectionId, String id, ServerRequest request) {
-    return getAuthenticatedPrincipal(request)
+  public Mono<ServerResponse> deleteTodo(
+      @Parameter(hidden = true) Mono<OAuth2AuthenticatedPrincipal> oAuth2AuthenticatedPrincipalMono,
+      String sectionId,
+      String id) {
+    return oAuth2AuthenticatedPrincipalMono
         .flatMap(
             oAuth2AuthenticatedPrincipal ->
                 isSectionValid(getAuthenticateUserEmail(oAuth2AuthenticatedPrincipal), sectionId))
@@ -102,7 +117,7 @@ public class TodoRouteHandler {
         .then(ServerResponse.ok().build());
   }
 
-  public Mono<ServerResponse> getStandardTags(ServerRequest request) {
+  public Mono<ServerResponse> getStandardTags() {
     return ServerResponse.ok()
         .contentType(MediaType.APPLICATION_JSON)
         .body(Flux.fromStream(Arrays.stream(StandardTags.values())), StandardTags.class);
@@ -129,19 +144,6 @@ public class TodoRouteHandler {
         .existsByUserIdAndId(userId, sectionId)
         .filter(Boolean::booleanValue)
         .switchIfEmpty(Mono.error(() -> new InvalidSectionRuntimeException(sectionId)));
-  }
-
-  private Mono<OAuth2AuthenticatedPrincipal> getAuthenticatedPrincipal(ServerRequest request) {
-    return request
-        .principal()
-        .filter(
-            principal ->
-                ((BearerTokenAuthentication) principal).getPrincipal()
-                    instanceof OAuth2AuthenticatedPrincipal)
-        .cast(BearerTokenAuthentication.class)
-        .map(bearerTokenAuthentication -> bearerTokenAuthentication.getPrincipal())
-        .filter(principal -> principal instanceof OAuth2AuthenticatedPrincipal)
-        .cast(OAuth2AuthenticatedPrincipal.class);
   }
 
   private String getAuthenticateUserEmail(
