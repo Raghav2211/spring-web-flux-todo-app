@@ -1,6 +1,7 @@
 package com.spring.webflux.todo.mapper;
 
 import com.spring.webflux.todo.dto.request.TodoRequest;
+import com.spring.webflux.todo.dto.response.TodoResponse;
 import com.spring.webflux.todo.entity.Todo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,4 +18,6 @@ public interface TodoMapper {
     @Mapping(target = "sectionId", source = "sectionId")
   })
   Todo requestToEntity(String sectionId, TodoRequest request);
+
+  TodoResponse entityToResponse(Todo todo);
 }

@@ -1,19 +1,19 @@
 package com.spring.webflux.todo.service;
 
 import com.spring.webflux.todo.dto.request.TodoRequest;
-import com.spring.webflux.todo.entity.UserTodoList;
+import com.spring.webflux.todo.dto.response.TodoResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface ITodoService {
 
-  public Mono<UserTodoList> create(String userId, Mono<TodoRequest> todo);
+  public Mono<TodoResponse> create(String userId, Mono<TodoRequest> todo);
 
-  public Mono<UserTodoList> update(String userId, Mono<TodoRequest> todo, Integer id);
+  public Mono<TodoResponse> update(String userId, Mono<TodoRequest> todo, Integer id);
 
-  public Mono<UserTodoList> findById(Integer id);
+  public Mono<TodoResponse> findById(Integer id);
 
-  public Flux<UserTodoList> findAll();
+  public Flux<TodoResponse> findAll();
 
-  public Mono<Void> delete(String userId, Integer id);
+  public Mono<Void> delete(String userId, String id);
 }

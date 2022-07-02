@@ -2,7 +2,7 @@ package com.spring.webflux.todo.controller;
 
 import com.spring.webflux.todo.dto.StandardTags;
 import com.spring.webflux.todo.dto.request.TodoRequest;
-import com.spring.webflux.todo.entity.UserTodoList;
+import com.spring.webflux.todo.dto.response.TodoResponse;
 import com.spring.webflux.todo.service.ITodoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -42,7 +42,7 @@ public class TodoController {
         @ApiResponse(
             responseCode = "200",
             description = "Retrieved todo successfully",
-            content = @Content(schema = @Schema(implementation = UserTodoList.class))),
+            content = @Content(schema = @Schema(implementation = TodoResponse.class))),
         @ApiResponse(
             responseCode = "404",
             description = "Todo not found",
@@ -59,8 +59,8 @@ public class TodoController {
             content = {@Content(schema = @Schema)})
       })
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Mono<UserTodoList>> getTodoById(@PathVariable Integer id) {
-    return new ResponseEntity<Mono<UserTodoList>>(todoService.findById(id), HttpStatus.OK);
+  public ResponseEntity<Mono<TodoResponse>> getTodoById(@PathVariable Integer id) {
+    return new ResponseEntity<Mono<TodoResponse>>(todoService.findById(id), HttpStatus.OK);
   }
 
   @Operation(summary = "Persist todo", operationId = "createTodo")
@@ -70,7 +70,7 @@ public class TodoController {
         @ApiResponse(
             responseCode = "201",
             description = "Todo successfully created",
-            content = @Content(schema = @Schema(implementation = UserTodoList.class))),
+            content = @Content(schema = @Schema(implementation = TodoResponse.class))),
         @ApiResponse(
             responseCode = "400",
             description = "Bad Request",
@@ -83,7 +83,7 @@ public class TodoController {
   @PostMapping(
       produces = MediaType.APPLICATION_JSON_VALUE,
       consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Mono<UserTodoList>> createTodo(
+  public ResponseEntity<Mono<TodoResponse>> createTodo(
       @Parameter(hidden = true) @AuthenticationPrincipal
           OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal,
       @RequestBody Mono<TodoRequest> requestTodo) {
@@ -99,14 +99,14 @@ public class TodoController {
         @ApiResponse(
             responseCode = "200",
             description = "Retrieved all todos",
-            content = @Content(schema = @Schema(implementation = UserTodoList.class))),
+            content = @Content(schema = @Schema(implementation = TodoResponse.class))),
         @ApiResponse(
             responseCode = "401",
             description = "Unauthorized",
             content = {@Content(schema = @Schema)})
       })
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public Flux<UserTodoList> getAllTodo() {
+  public Flux<TodoResponse> getAllTodo() {
     return todoService.findAll();
   }
 
@@ -117,7 +117,7 @@ public class TodoController {
         @ApiResponse(
             responseCode = "200",
             description = "Todo successfully updated",
-            content = @Content(schema = @Schema(implementation = UserTodoList.class))),
+            content = @Content(schema = @Schema(implementation = TodoResponse.class))),
         @ApiResponse(
             responseCode = "404",
             description = "Todo not found",
@@ -136,12 +136,12 @@ public class TodoController {
       value = "/{id}",
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Mono<UserTodoList>> updateTodo(
+  public ResponseEntity<Mono<TodoResponse>> updateTodo(
       @Parameter(hidden = true) @AuthenticationPrincipal
           OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal,
       @RequestBody Mono<TodoRequest> todo,
       @PathVariable Integer id) {
-    return new ResponseEntity<Mono<UserTodoList>>(
+    return new ResponseEntity<Mono<TodoResponse>>(
         todoService.update(getAuthenticateUserEmail(oAuth2AuthenticatedPrincipal), todo, id),
         HttpStatus.OK);
   }

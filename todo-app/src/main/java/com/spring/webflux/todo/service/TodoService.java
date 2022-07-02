@@ -1,7 +1,6 @@
 package com.spring.webflux.todo.service;
 
 import com.spring.webflux.todo.dto.request.TodoRequest;
-import com.spring.webflux.todo.entity.UserTodoList;
 import com.spring.webflux.todo.exception.InvalidTodoException;
 import com.spring.webflux.todo.exception.TodoRuntimeException;
 import com.spring.webflux.todo.repository.TodoRepository;

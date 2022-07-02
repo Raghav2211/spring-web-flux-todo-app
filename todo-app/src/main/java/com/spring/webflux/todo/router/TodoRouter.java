@@ -5,7 +5,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RouterFunctions.*;
 
 import com.spring.webflux.todo.dto.request.TodoRequest;
-import com.spring.webflux.todo.entity.UserTodoList;
+import com.spring.webflux.todo.dto.response.TodoResponse;
 import com.spring.webflux.todo.exception.InvalidTodoException;
 import com.spring.webflux.todo.exception.TodoRuntimeException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -66,7 +66,7 @@ public class TodoRouter {
                   @ApiResponse(
                       responseCode = "200",
                       description = "Retrieved todo successfully",
-                      content = @Content(schema = @Schema(implementation = UserTodoList.class))),
+                      content = @Content(schema = @Schema(implementation = TodoResponse.class))),
                   @ApiResponse(
                       responseCode = "404",
                       description = "Todo not found",
@@ -107,7 +107,7 @@ public class TodoRouter {
                   @ApiResponse(
                       responseCode = "200",
                       description = "Todo successfully updated",
-                      content = @Content(schema = @Schema(implementation = UserTodoList.class))),
+                      content = @Content(schema = @Schema(implementation = TodoResponse.class))),
                   @ApiResponse(
                       responseCode = "404",
                       description = "Todo not found",
@@ -156,7 +156,7 @@ public class TodoRouter {
                   @ApiResponse(
                       responseCode = "201",
                       description = "Todo successfully created",
-                      content = @Content(schema = @Schema(implementation = UserTodoList.class))),
+                      content = @Content(schema = @Schema(implementation = TodoResponse.class))),
                   @ApiResponse(
                       responseCode = "400",
                       description = "Bad Request",
@@ -190,7 +190,7 @@ public class TodoRouter {
                   @ApiResponse(
                       responseCode = "200",
                       description = "Retrieved all todos",
-                      content = @Content(schema = @Schema(implementation = UserTodoList.class))),
+                      content = @Content(schema = @Schema(implementation = TodoResponse.class))),
                   @ApiResponse(
                       responseCode = "401",
                       description = "Unauthorized",
@@ -263,12 +263,15 @@ public class TodoRouter {
         path("/api/v2/{sectionId}/todo"),
         nest(
             accept(APPLICATION_JSON).or(contentType(APPLICATION_JSON)),
-            RouterFunctions.route(GET(""), todoRouteHandler::getAllTodo)
+            RouterFunctions.route(
+                    GET(""),
+                    serverRequest ->
+                        todoRouteHandler.getAllTodo(getSectionId(serverRequest), serverRequest))
                 .andRoute(
                     method(HttpMethod.POST),
                     serverRequest ->
                         todoRouteHandler
-                            .createTodo(serverRequest)
+                            .createTodo(getSectionId(serverRequest), serverRequest)
                             .onErrorResume(TodoRuntimeException.class, handleInvalidTodoRequest))
                 .andNest(
                     path("/{id:[0-9]+}"),
@@ -276,14 +279,17 @@ public class TodoRouter {
                             method(HttpMethod.GET),
                             serverRequest ->
                                 todoRouteHandler
-                                    .getTodoById(serverRequest)
+                                    .getTodoById(getSectionId(serverRequest), serverRequest)
                                     .onErrorResume(
                                         InvalidTodoException.class, handleInvalidTodoRequest))
                         .andRoute(
                             method(HttpMethod.PUT),
                             serverRequest ->
                                 todoRouteHandler
-                                    .updateTodo(serverRequest)
+                                    .updateTodo(
+                                        getSectionId(serverRequest),
+                                        getTodoId(serverRequest),
+                                        serverRequest)
                                     .onErrorResume(
                                         TodoRuntimeException.class, handleInvalidTodoRequest)
                                     .onErrorResume(
@@ -292,7 +298,10 @@ public class TodoRouter {
                             method(HttpMethod.DELETE),
                             serverRequest ->
                                 todoRouteHandler
-                                    .deleteTodo(serverRequest)
+                                    .deleteTodo(
+                                        getSectionId(serverRequest),
+                                        getTodoId(serverRequest),
+                                        serverRequest)
                                     .onErrorResume(
                                         InvalidTodoException.class, handleInvalidTodoRequest)))
                 .andRoute(path("/standardTags"), todoRouteHandler::getStandardTags)
@@ -305,5 +314,13 @@ public class TodoRouter {
             httpHeaders ->
                 httpHeaders.add(REQUEST_HEADER_ID, request.pathVariable(REQUEST_HEADER_ID)))
         .build();
+  }
+
+  private String getSectionId(ServerRequest request) {
+    return request.pathVariable("sectionId");
+  }
+
+  private String getTodoId(ServerRequest request) {
+    return request.pathVariable("id");
   }
 }
