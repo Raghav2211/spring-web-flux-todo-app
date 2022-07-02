@@ -28,10 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.reactive.function.server.RouterFunction;
-import org.springframework.web.reactive.function.server.RouterFunctions;
-import org.springframework.web.reactive.function.server.ServerRequest;
-import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.reactive.function.server.*;
 import reactor.core.publisher.Mono;
 
 @Configuration(proxyBeanMethods = false)
@@ -266,58 +263,70 @@ public class TodoRouter {
         path("/api/v2/{sectionId}/todo"),
         nest(
             accept(APPLICATION_JSON).or(contentType(APPLICATION_JSON)),
-            RouterFunctions.route(
-                    GET(""),
-                    serverRequest ->
-                        todoRouteHandler.getAllTodo(
-                            getAuthenticatedPrincipal(serverRequest), getSectionId(serverRequest)))
-                .andRoute(
-                    method(HttpMethod.POST),
-                    serverRequest ->
-                        todoRouteHandler
-                            .createTodo(
-                                getAuthenticatedPrincipal(serverRequest),
-                                getSectionId(serverRequest),
-                                serverRequest)
-                            .onErrorResume(TodoRuntimeException.class, handleInvalidTodoRequest))
+            RouterFunctions.route(GET(""), routeToFindAllTodo(todoRouteHandler))
+                .andRoute(method(HttpMethod.POST), routeToCreateTodo(todoRouteHandler))
                 .andNest(
                     path("/{id:[0-9]+}"),
                     RouterFunctions.route(
-                            method(HttpMethod.GET),
-                            serverRequest ->
-                                todoRouteHandler
-                                    .getTodoById(
-                                        getAuthenticatedPrincipal(serverRequest),
-                                        getSectionId(serverRequest),
-                                        getTodoId(serverRequest))
-                                    .onErrorResume(
-                                        InvalidTodoException.class, handleInvalidTodoRequest))
+                            method(HttpMethod.GET), routeToFindTodoById(todoRouteHandler))
+                        .andRoute(method(HttpMethod.PUT), routeToUpdateTodo(todoRouteHandler))
                         .andRoute(
-                            method(HttpMethod.PUT),
-                            serverRequest ->
-                                todoRouteHandler
-                                    .updateTodo(
-                                        getAuthenticatedPrincipal(serverRequest),
-                                        getSectionId(serverRequest),
-                                        getTodoId(serverRequest),
-                                        serverRequest)
-                                    .onErrorResume(
-                                        TodoRuntimeException.class, handleInvalidTodoRequest)
-                                    .onErrorResume(
-                                        InvalidTodoException.class, handleInvalidTodoRequest))
-                        .andRoute(
-                            method(HttpMethod.DELETE),
-                            serverRequest ->
-                                todoRouteHandler
-                                    .deleteTodo(
-                                        getAuthenticatedPrincipal(serverRequest),
-                                        getSectionId(serverRequest),
-                                        getTodoId(serverRequest))
-                                    .onErrorResume(
-                                        InvalidTodoException.class, handleInvalidTodoRequest)))
-                .andRoute(
-                    path("/standardTags"), serverRequest -> todoRouteHandler.getStandardTags())
+                            method(HttpMethod.DELETE), routeToDeleteTodoById(todoRouteHandler)))
+                .andRoute(path("/standardTags"), routeToGetStandardTags(todoRouteHandler))
                 .andRoute(path("/{id}"), this::badRequest)));
+  }
+
+  private HandlerFunction<ServerResponse> routeToGetStandardTags(
+      TodoRouteHandler todoRouteHandler) {
+    return serverRequest -> todoRouteHandler.getStandardTags();
+  }
+
+  private HandlerFunction<ServerResponse> routeToFindAllTodo(TodoRouteHandler todoRouteHandler) {
+    return serverRequest ->
+        todoRouteHandler.getAllTodo(
+            getAuthenticatedPrincipal(serverRequest), getSectionId(serverRequest));
+  }
+
+  private HandlerFunction<ServerResponse> routeToDeleteTodoById(TodoRouteHandler todoRouteHandler) {
+    return serverRequest ->
+        todoRouteHandler
+            .deleteTodo(
+                getAuthenticatedPrincipal(serverRequest),
+                getSectionId(serverRequest),
+                getTodoId(serverRequest))
+            .onErrorResume(InvalidTodoException.class, handleInvalidTodoRequest);
+  }
+
+  private HandlerFunction<ServerResponse> routeToFindTodoById(TodoRouteHandler todoRouteHandler) {
+    return serverRequest ->
+        todoRouteHandler
+            .getTodoById(
+                getAuthenticatedPrincipal(serverRequest),
+                getSectionId(serverRequest),
+                getTodoId(serverRequest))
+            .onErrorResume(InvalidTodoException.class, handleInvalidTodoRequest);
+  }
+
+  private HandlerFunction<ServerResponse> routeToUpdateTodo(TodoRouteHandler todoRouteHandler) {
+    return serverRequest ->
+        todoRouteHandler
+            .updateTodo(
+                getAuthenticatedPrincipal(serverRequest),
+                getSectionId(serverRequest),
+                getTodoId(serverRequest),
+                serverRequest)
+            .onErrorResume(TodoRuntimeException.class, handleInvalidTodoRequest)
+            .onErrorResume(InvalidTodoException.class, handleInvalidTodoRequest);
+  }
+
+  private HandlerFunction<ServerResponse> routeToCreateTodo(TodoRouteHandler todoRouteHandler) {
+    return serverRequest ->
+        todoRouteHandler
+            .createTodo(
+                getAuthenticatedPrincipal(serverRequest),
+                getSectionId(serverRequest),
+                serverRequest)
+            .onErrorResume(TodoRuntimeException.class, handleInvalidTodoRequest);
   }
 
   private Mono<ServerResponse> badRequest(ServerRequest request) {
