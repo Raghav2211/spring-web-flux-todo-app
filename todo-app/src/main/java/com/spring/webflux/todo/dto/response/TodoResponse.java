@@ -1,10 +1,15 @@
 package com.spring.webflux.todo.dto.response;
 
-import java.io.Serializable;
-import lombok.Data;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
+import com.spring.webflux.todo.dto.request.Schedule;
+import com.spring.webflux.todo.dto.request.TodoRequest;
+import lombok.Getter;
 
-@Data
-@Scope(scopeName = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class TodoResponse implements Serializable {}
+@Getter
+public class TodoResponse extends TodoRequest {
+  private final String sectionId;
+
+  public TodoResponse(String task, Schedule schedule, String sectionId) {
+    super(task, schedule);
+    this.sectionId = sectionId;
+  }
+}
