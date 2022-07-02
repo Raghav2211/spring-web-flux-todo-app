@@ -211,8 +211,7 @@ public class TodoRouter {
                       responseCode = "200",
                       description = "StandardTags retrieved successfully",
                       content = {@Content(schema = @Schema)})
-                },
-                security = {}))
+                }))
   })
   public RouterFunction<ServerResponse> route(TodoRouteHandler todoRouteHandler) {
     return nest(
