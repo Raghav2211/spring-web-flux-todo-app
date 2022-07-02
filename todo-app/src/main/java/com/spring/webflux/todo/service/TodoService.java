@@ -1,6 +1,6 @@
 package com.spring.webflux.todo.service;
 
-import com.spring.webflux.todo.dto.request.Request;
+import com.spring.webflux.todo.dto.request.TodoRequest;
 import com.spring.webflux.todo.entity.UserTodoList;
 import com.spring.webflux.todo.exception.InvalidTodoException;
 import com.spring.webflux.todo.exception.TodoRuntimeException;
@@ -24,13 +24,13 @@ public class TodoService implements ITodoService {
     this.todoRepository = todoRepository;
   }
 
-  public Mono<UserTodoList> create(String userId, Mono<Request> todoResourceMono) {
+  public Mono<UserTodoList> create(String userId, Mono<TodoRequest> todoResourceMono) {
     return validateTodoRequestContent(todoResourceMono)
         .map(this::mapToTodo)
         .flatMap(todo -> todoRepository.save(todo));
   }
 
-  public Mono<UserTodoList> update(String userId, Mono<Request> todoResourceMono, Integer id) {
+  public Mono<UserTodoList> update(String userId, Mono<TodoRequest> todoResourceMono, Integer id) {
     return validateTodoRequestContent(todoResourceMono)
         .flatMap(
             todoResource ->
@@ -39,7 +39,7 @@ public class TodoService implements ITodoService {
                     .flatMap(todo -> todoRepository.save(todo)));
   }
 
-  private void updateExistingTodo(UserTodoList todo, Request todoResource) {
+  private void updateExistingTodo(UserTodoList todo, TodoRequest todoResource) {
     //    todo.setTask(todoResource.getTask());
   }
 
@@ -58,7 +58,7 @@ public class TodoService implements ITodoService {
     return Mono.just(id).flatMap(todoId -> todoRepository.deleteById(todoId));
   }
 
-  private Mono<Request> validateTodoRequestContent(Mono<Request> todoResourceMono) {
+  private Mono<TodoRequest> validateTodoRequestContent(Mono<TodoRequest> todoResourceMono) {
     return todoResourceMono
         //        .filter(todoResource -> StringUtils.hasText(todoResource.getTask()))
         .switchIfEmpty(
@@ -67,7 +67,7 @@ public class TodoService implements ITodoService {
                 HttpStatus.BAD_REQUEST, String.format("Todo content cannot be empty"))));
   }
 
-  public UserTodoList mapToTodo(Request todoResource) {
+  public UserTodoList mapToTodo(TodoRequest todoResource) {
     UserTodoList todo = new UserTodoList();
     //    todo.setTask(todoResource.getTask());
     return todo;

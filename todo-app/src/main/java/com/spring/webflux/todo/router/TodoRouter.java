@@ -4,7 +4,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 import static org.springframework.web.reactive.function.server.RouterFunctions.*;
 
-import com.spring.webflux.todo.dto.request.Request;
+import com.spring.webflux.todo.dto.request.TodoRequest;
 import com.spring.webflux.todo.entity.UserTodoList;
 import com.spring.webflux.todo.exception.InvalidTodoException;
 import com.spring.webflux.todo.exception.TodoRuntimeException;
@@ -124,7 +124,7 @@ public class TodoRouter {
                 },
                 requestBody =
                     @RequestBody(
-                        content = @Content(schema = @Schema(implementation = Request.class))),
+                        content = @Content(schema = @Schema(implementation = TodoRequest.class))),
                 parameters = {
                   @Parameter(
                       in = ParameterIn.PATH,
@@ -168,7 +168,7 @@ public class TodoRouter {
                 },
                 requestBody =
                     @RequestBody(
-                        content = @Content(schema = @Schema(implementation = Request.class))),
+                        content = @Content(schema = @Schema(implementation = TodoRequest.class))),
                 security = {@SecurityRequirement(name = "bearerAuth")})),
     @RouterOperation(
         path = "/api/v2/{sectionId}/todo",

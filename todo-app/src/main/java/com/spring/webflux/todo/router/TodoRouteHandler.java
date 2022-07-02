@@ -1,7 +1,7 @@
 package com.spring.webflux.todo.router;
 
 import com.spring.webflux.todo.dto.StandardTags;
-import com.spring.webflux.todo.dto.request.Request;
+import com.spring.webflux.todo.dto.request.TodoRequest;
 import com.spring.webflux.todo.entity.UserTodoList;
 import com.spring.webflux.todo.exception.InvalidTodoException;
 import com.spring.webflux.todo.exception.TodoRuntimeException;
@@ -84,15 +84,15 @@ public class TodoRouteHandler {
         .body(Flux.fromStream(Arrays.stream(StandardTags.values())), StandardTags.class);
   }
 
-  public UserTodoList mapToTodo(Request todoResource) {
+  public UserTodoList mapToTodo(TodoRequest todoResource) {
     UserTodoList todo = new UserTodoList();
     //    todo.setTask(todoResource.getTask());
     return todo;
   }
 
-  private Mono<Request> validateAndGetTodoResource(ServerRequest request) {
+  private Mono<TodoRequest> validateAndGetTodoResource(ServerRequest request) {
     return request
-        .bodyToMono(Request.class)
+        .bodyToMono(TodoRequest.class)
         //        .filter(todoResource -> StringUtils.hasText(todoResource.getTask()))
         .switchIfEmpty(
             Mono.error(
@@ -100,7 +100,7 @@ public class TodoRouteHandler {
                     HttpStatus.BAD_REQUEST, String.format("Todo content cannot be empty"))));
   }
 
-  private void updateExistingTodo(UserTodoList todo, Request todoResource) {
+  private void updateExistingTodo(UserTodoList todo, TodoRequest todoResource) {
     //    todo.setTask(todoResource.getTask());
 
   }

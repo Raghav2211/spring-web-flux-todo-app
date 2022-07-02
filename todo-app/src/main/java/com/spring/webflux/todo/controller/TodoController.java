@@ -1,7 +1,7 @@
 package com.spring.webflux.todo.controller;
 
 import com.spring.webflux.todo.dto.StandardTags;
-import com.spring.webflux.todo.dto.request.Request;
+import com.spring.webflux.todo.dto.request.TodoRequest;
 import com.spring.webflux.todo.entity.UserTodoList;
 import com.spring.webflux.todo.service.ITodoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -86,7 +86,7 @@ public class TodoController {
   public ResponseEntity<Mono<UserTodoList>> createTodo(
       @Parameter(hidden = true) @AuthenticationPrincipal
           OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal,
-      @RequestBody Mono<Request> requestTodo) {
+      @RequestBody Mono<TodoRequest> requestTodo) {
     return new ResponseEntity<>(
         todoService.create(getAuthenticateUserEmail(oAuth2AuthenticatedPrincipal), requestTodo),
         HttpStatus.CREATED);
@@ -139,7 +139,7 @@ public class TodoController {
   public ResponseEntity<Mono<UserTodoList>> updateTodo(
       @Parameter(hidden = true) @AuthenticationPrincipal
           OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal,
-      @RequestBody Mono<Request> todo,
+      @RequestBody Mono<TodoRequest> todo,
       @PathVariable Integer id) {
     return new ResponseEntity<Mono<UserTodoList>>(
         todoService.update(getAuthenticateUserEmail(oAuth2AuthenticatedPrincipal), todo, id),
