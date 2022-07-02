@@ -177,7 +177,8 @@ public class TodoController {
       })
   @DeleteMapping(value = "/{id}")
   public ResponseEntity<Mono<Void>> deleteTodo(
-      @AuthenticationPrincipal OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal,
+      @Parameter(hidden = true) @AuthenticationPrincipal
+          OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal,
       @PathVariable String sectionId,
       @PathVariable String id) {
     var httpHeader = new HttpHeaders();

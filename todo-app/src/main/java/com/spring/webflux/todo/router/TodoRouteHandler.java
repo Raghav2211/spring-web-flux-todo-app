@@ -69,7 +69,7 @@ public class TodoRouteHandler {
                     .body(BodyInserters.fromValue(todo)));
   }
 
-  public Mono<ServerResponse> updateTodo(String sectionId, String todoId, ServerRequest request) {
+  public Mono<ServerResponse> updateTodo(String sectionId, String id, ServerRequest request) {
     return getAuthenticatedPrincipal(request)
         .flatMap(
             oAuth2AuthenticatedPrincipal ->
@@ -78,9 +78,9 @@ public class TodoRouteHandler {
         .flatMap(
             todoRequest ->
                 todoRepository
-                    .existsById(todoId)
+                    .existsById(id)
                     .filter(Boolean::valueOf)
-                    .switchIfEmpty(Mono.error(() -> new InvalidTodoException(todoId)))
+                    .switchIfEmpty(Mono.error(() -> new InvalidTodoException(id)))
                     .thenReturn(todoRequest))
         .flatMap(
             todoRequest ->
@@ -89,16 +89,16 @@ public class TodoRouteHandler {
         .flatMap(
             todoResponse ->
                 ServerResponse.ok()
-                    .location(URI.create("/todo/" + todoId))
+                    .location(URI.create("/todo/" + id))
                     .body(BodyInserters.fromValue(todoResponse)));
   }
 
-  public Mono<ServerResponse> deleteTodo(String sectionId, String todoId, ServerRequest request) {
+  public Mono<ServerResponse> deleteTodo(String sectionId, String id, ServerRequest request) {
     return getAuthenticatedPrincipal(request)
         .flatMap(
             oAuth2AuthenticatedPrincipal ->
                 isSectionValid(getAuthenticateUserEmail(oAuth2AuthenticatedPrincipal), sectionId))
-        .flatMap(principal -> todoRepository.deleteById(todoId))
+        .flatMap(principal -> todoRepository.deleteById(id))
         .then(ServerResponse.ok().build());
   }
 
