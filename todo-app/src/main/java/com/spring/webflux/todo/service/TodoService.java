@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -55,10 +56,10 @@ public class TodoService implements ITodoService {
 
   private Mono<TodoRequest> validateTodoRequestContent(Mono<TodoRequest> todoResourceMono) {
     return todoResourceMono
-        //        .filter(todoResource -> StringUtils.hasText(todoResource.getTask()))
+        .filter(todoResource -> StringUtils.hasText(todoResource.getTask()))
         .switchIfEmpty(
-        Mono.error(
-            new TodoRuntimeException(
-                HttpStatus.BAD_REQUEST, String.format("Todo content cannot be empty"))));
+            Mono.error(
+                new TodoRuntimeException(
+                    HttpStatus.BAD_REQUEST, String.format("Todo content cannot be empty"))));
   }
 }

@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
-    info = @Info(title = "Todo app", version = "1.0", description = "Todo WebFlux Rest API"))
+    info = @Info(title = "Todo app", version = "2.0.0", description = "Todo WebFlux Rest API"))
 @SecurityScheme(
     name = "bearerAuth",
     type = SecuritySchemeType.HTTP,

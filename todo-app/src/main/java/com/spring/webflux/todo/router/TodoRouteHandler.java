@@ -9,6 +9,7 @@ import com.spring.webflux.todo.exception.TodoRuntimeException;
 import com.spring.webflux.todo.mapper.TodoMapper;
 import com.spring.webflux.todo.repository.SectionRepository;
 import com.spring.webflux.todo.repository.TodoRepository;
+import com.spring.webflux.todo.security.SecurityUtils;
 import io.swagger.v3.oas.annotations.Parameter;
 import java.net.URI;
 import java.util.Arrays;
@@ -124,17 +125,12 @@ public class TodoRouteHandler {
   private Mono<Boolean> validateSection(
       Mono<OAuth2AuthenticatedPrincipal> oAuth2AuthenticatedPrincipalMono, String sectionId) {
     return oAuth2AuthenticatedPrincipalMono
+        .map(SecurityUtils::getUserId)
         .flatMap(
-            oAuth2AuthenticatedPrincipal ->
+            userId ->
                 sectionRepository
-                    .existsByUserIdAndId(
-                        getAuthenticateUserEmail(oAuth2AuthenticatedPrincipal), sectionId)
+                    .existsByUserIdAndId(userId, sectionId)
                     .filter(Boolean::booleanValue))
         .switchIfEmpty(Mono.error(() -> new InvalidSectionRuntimeException(sectionId)));
-  }
-
-  private String getAuthenticateUserEmail(
-      OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal) {
-    return String.valueOf(oAuth2AuthenticatedPrincipal.getAttributes().get("email"));
   }
 }
