@@ -6,6 +6,7 @@ import com.spring.webflux.todo.entity.UserTodoList;
 import com.spring.webflux.todo.service.ITodoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,7 +25,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping(value = {"/api/v1/todo"})
+@RequestMapping(value = {"/api/v1/{sectionId}/todo"})
 @SecurityRequirement(name = "bearerAuth")
 public class TodoController {
   public static final String REQUEST_HEADER_ID = "id";
@@ -35,6 +36,7 @@ public class TodoController {
   }
 
   @Operation(summary = "Get a todo by its id", operationId = "getTodoById")
+  @Parameter(in = ParameterIn.PATH, name = "sectionId", schema = @Schema(type = "string"))
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -62,6 +64,7 @@ public class TodoController {
   }
 
   @Operation(summary = "Persist todo", operationId = "createTodo")
+  @Parameter(in = ParameterIn.PATH, name = "sectionId", schema = @Schema(type = "string"))
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -90,6 +93,7 @@ public class TodoController {
   }
 
   @Operation(summary = "Get all todos", operationId = "getAllTodo")
+  @Parameter(in = ParameterIn.PATH, name = "sectionId", schema = @Schema(type = "string"))
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -107,6 +111,7 @@ public class TodoController {
   }
 
   @Operation(summary = "Update todo", operationId = "updateTodo")
+  @Parameter(in = ParameterIn.PATH, name = "sectionId", schema = @Schema(type = "string"))
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -142,6 +147,7 @@ public class TodoController {
   }
 
   @Operation(summary = "Delete todo by id", operationId = "deleteTodo")
+  @Parameter(in = ParameterIn.PATH, name = "sectionId", schema = @Schema(type = "string"))
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -176,6 +182,7 @@ public class TodoController {
   }
 
   @Operation(summary = "Get standard tags", operationId = "getStandardTags")
+  @Parameter(in = ParameterIn.PATH, name = "sectionId", schema = @Schema(type = "string"))
   @ApiResponses(
       @ApiResponse(
           responseCode = "200",
