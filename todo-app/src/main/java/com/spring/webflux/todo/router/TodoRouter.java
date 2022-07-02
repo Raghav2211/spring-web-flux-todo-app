@@ -53,7 +53,7 @@ public class TodoRouter {
   @Bean
   @RouterOperations({
     @RouterOperation(
-        path = "/api/v2/todo/{id}",
+        path = "/api/v2/{sectionId}/todo/{id}",
         produces = {MediaType.APPLICATION_JSON_VALUE},
         beanClass = TodoRouteHandler.class,
         method = RequestMethod.GET,
@@ -82,10 +82,19 @@ public class TodoRouter {
                       description = "Unauthorized",
                       content = {@Content(schema = @Schema)})
                 },
-                parameters = {@Parameter(in = ParameterIn.PATH, name = REQUEST_HEADER_ID)},
+                parameters = {
+                  @Parameter(
+                      in = ParameterIn.PATH,
+                      name = "id",
+                      schema = @Schema(type = "integer")),
+                  @Parameter(
+                      in = ParameterIn.PATH,
+                      name = "sectionId",
+                      schema = @Schema(type = "string"))
+                },
                 security = {@SecurityRequirement(name = "bearerAuth")})),
     @RouterOperation(
-        path = "/api/v2/todo/{id}",
+        path = "/api/v2/{sectionId}/todo/{id}",
         produces = {MediaType.APPLICATION_JSON_VALUE},
         beanClass = TodoRouteHandler.class,
         method = RequestMethod.PUT,
@@ -116,10 +125,19 @@ public class TodoRouter {
                 requestBody =
                     @RequestBody(
                         content = @Content(schema = @Schema(implementation = Request.class))),
-                parameters = {@Parameter(in = ParameterIn.PATH, name = REQUEST_HEADER_ID)},
+                parameters = {
+                  @Parameter(
+                      in = ParameterIn.PATH,
+                      name = "id",
+                      schema = @Schema(type = "integer")),
+                  @Parameter(
+                      in = ParameterIn.PATH,
+                      name = "sectionId",
+                      schema = @Schema(type = "string"))
+                },
                 security = {@SecurityRequirement(name = "bearerAuth")})),
     @RouterOperation(
-        path = "/api/v2/todo",
+        path = "/api/v2/{sectionId}/todo",
         produces = {MediaType.APPLICATION_JSON_VALUE},
         beanClass = TodoRouteHandler.class,
         method = RequestMethod.POST,
@@ -128,6 +146,12 @@ public class TodoRouter {
             @Operation(
                 summary = "Persist todo",
                 operationId = "createTodo",
+                parameters = {
+                  @Parameter(
+                      in = ParameterIn.PATH,
+                      name = "sectionId",
+                      schema = @Schema(type = "string"))
+                },
                 responses = {
                   @ApiResponse(
                       responseCode = "201",
@@ -147,7 +171,7 @@ public class TodoRouter {
                         content = @Content(schema = @Schema(implementation = Request.class))),
                 security = {@SecurityRequirement(name = "bearerAuth")})),
     @RouterOperation(
-        path = "/api/v2/todo",
+        path = "/api/v2/{sectionId}/todo",
         produces = {MediaType.APPLICATION_JSON_VALUE},
         beanClass = TodoRouteHandler.class,
         method = RequestMethod.GET,
@@ -156,6 +180,12 @@ public class TodoRouter {
             @Operation(
                 summary = "Get all todos",
                 operationId = "getAllTodo",
+                parameters = {
+                  @Parameter(
+                      in = ParameterIn.PATH,
+                      name = "sectionId",
+                      schema = @Schema(type = "string"))
+                },
                 responses = {
                   @ApiResponse(
                       responseCode = "200",
@@ -168,7 +198,7 @@ public class TodoRouter {
                 },
                 security = {@SecurityRequirement(name = "bearerAuth")})),
     @RouterOperation(
-        path = "/api/v2/todo/{id}",
+        path = "/api/v2/{sectionId}/todo/{id}",
         method = RequestMethod.DELETE,
         beanClass = TodoRouteHandler.class,
         beanMethod = "deleteTodo",
@@ -195,10 +225,19 @@ public class TodoRouter {
                       description = "Unauthorized",
                       content = {@Content(schema = @Schema)})
                 },
-                parameters = {@Parameter(in = ParameterIn.PATH, name = REQUEST_HEADER_ID)},
+                parameters = {
+                  @Parameter(
+                      in = ParameterIn.PATH,
+                      name = "id",
+                      schema = @Schema(type = "integer")),
+                  @Parameter(
+                      in = ParameterIn.PATH,
+                      name = "sectionId",
+                      schema = @Schema(type = "string"))
+                },
                 security = {@SecurityRequirement(name = "bearerAuth")})),
     @RouterOperation(
-        path = "/api/v2/todo/standardTags",
+        path = "/api/v2/{sectionId}/todo/standardTags",
         method = RequestMethod.GET,
         beanClass = TodoRouteHandler.class,
         beanMethod = "getStandardTags",
@@ -206,6 +245,12 @@ public class TodoRouter {
             @Operation(
                 summary = "Get standard tags",
                 operationId = "getStandardTags",
+                parameters = {
+                  @Parameter(
+                      in = ParameterIn.PATH,
+                      name = "sectionId",
+                      schema = @Schema(type = "string"))
+                },
                 responses = {
                   @ApiResponse(
                       responseCode = "200",
@@ -215,7 +260,7 @@ public class TodoRouter {
   })
   public RouterFunction<ServerResponse> route(TodoRouteHandler todoRouteHandler) {
     return nest(
-        path("/api/v2/todo"),
+        path("/api/v2/{sectionId}/todo"),
         nest(
             accept(APPLICATION_JSON).or(contentType(APPLICATION_JSON)),
             RouterFunctions.route(GET(""), todoRouteHandler::getAllTodo)
