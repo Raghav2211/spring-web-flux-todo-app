@@ -9,7 +9,7 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
-@AllArgsConstructor
+// @AllArgsConstructor
 @RequiredArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 public class Schedule implements Serializable {

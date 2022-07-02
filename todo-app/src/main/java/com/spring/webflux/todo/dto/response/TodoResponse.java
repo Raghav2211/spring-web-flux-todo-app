@@ -6,10 +6,12 @@ import lombok.Getter;
 
 @Getter
 public class TodoResponse extends TodoRequest {
+  private final String id;
   private final String sectionId;
 
-  public TodoResponse(String task, Schedule schedule, String sectionId) {
+  public TodoResponse(String id, String sectionId, String task, Schedule schedule) {
     super(task, schedule);
+    this.id = id;
     this.sectionId = sectionId;
   }
 }

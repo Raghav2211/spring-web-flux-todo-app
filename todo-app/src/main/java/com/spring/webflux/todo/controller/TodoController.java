@@ -3,6 +3,7 @@ package com.spring.webflux.todo.controller;
 import com.spring.webflux.todo.dto.StandardTags;
 import com.spring.webflux.todo.dto.request.TodoRequest;
 import com.spring.webflux.todo.dto.response.TodoResponse;
+import com.spring.webflux.todo.mapper.TodoMapper;
 import com.spring.webflux.todo.service.ITodoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.Arrays;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -59,8 +61,11 @@ public class TodoController {
             content = {@Content(schema = @Schema)})
       })
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Mono<TodoResponse>> getTodoById(@PathVariable Integer id) {
-    return new ResponseEntity<Mono<TodoResponse>>(todoService.findById(id), HttpStatus.OK);
+  public ResponseEntity<Mono<TodoResponse>> getTodoById(
+      @PathVariable String sectionId, @PathVariable String id) {
+    return new ResponseEntity<Mono<TodoResponse>>(
+        todoService.findBySectionIdAndId(sectionId, id).map(TodoMapper.INSTANCE::entityToResponse),
+        HttpStatus.OK);
   }
 
   @Operation(summary = "Persist todo", operationId = "createTodo")
@@ -86,9 +91,10 @@ public class TodoController {
   public ResponseEntity<Mono<TodoResponse>> createTodo(
       @Parameter(hidden = true) @AuthenticationPrincipal
           OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal,
+      @PathVariable String sectionId,
       @RequestBody Mono<TodoRequest> requestTodo) {
-    return new ResponseEntity<>(
-        todoService.create(getAuthenticateUserEmail(oAuth2AuthenticatedPrincipal), requestTodo),
+    return new ResponseEntity<Mono<TodoResponse>>(
+        todoService.create(sectionId, requestTodo).map(TodoMapper.INSTANCE::entityToResponse),
         HttpStatus.CREATED);
   }
 
@@ -106,8 +112,8 @@ public class TodoController {
             content = {@Content(schema = @Schema)})
       })
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public Flux<TodoResponse> getAllTodo() {
-    return todoService.findAll();
+  public Flux<TodoResponse> getAllTodo(@PathVariable String sectionId) {
+    return todoService.findAllBySectionId(sectionId).map(TodoMapper.INSTANCE::entityToResponse);
   }
 
   @Operation(summary = "Update todo", operationId = "updateTodo")
@@ -139,10 +145,11 @@ public class TodoController {
   public ResponseEntity<Mono<TodoResponse>> updateTodo(
       @Parameter(hidden = true) @AuthenticationPrincipal
           OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal,
-      @RequestBody Mono<TodoRequest> todo,
-      @PathVariable Integer id) {
+      @PathVariable String sectionId,
+      @PathVariable String id,
+      @RequestBody Mono<TodoRequest> todo) {
     return new ResponseEntity<Mono<TodoResponse>>(
-        todoService.update(getAuthenticateUserEmail(oAuth2AuthenticatedPrincipal), todo, id),
+        todoService.update(sectionId, id, todo).map(TodoMapper.INSTANCE::entityToResponse),
         HttpStatus.OK);
   }
 
@@ -171,14 +178,13 @@ public class TodoController {
   @DeleteMapping(value = "/{id}")
   public ResponseEntity<Mono<Void>> deleteTodo(
       @AuthenticationPrincipal OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal,
-      @PathVariable Integer id) {
+      @PathVariable String sectionId,
+      @PathVariable String id) {
     var httpHeader = new HttpHeaders();
     httpHeader.add("id", String.valueOf(id));
-    return id == null || id < 0
+    return id == null || StringUtils.isBlank(id)
         ? new ResponseEntity<Mono<Void>>(httpHeader, HttpStatus.BAD_REQUEST)
-        : new ResponseEntity<Mono<Void>>(
-            todoService.delete(getAuthenticateUserEmail(oAuth2AuthenticatedPrincipal), id),
-            HttpStatus.OK);
+        : new ResponseEntity<Mono<Void>>(todoService.delete(sectionId, id), HttpStatus.OK);
   }
 
   @Operation(summary = "Get standard tags", operationId = "getStandardTags")
@@ -191,10 +197,5 @@ public class TodoController {
   @GetMapping("/standardTags")
   public Flux<StandardTags> getStandardTags() {
     return Flux.fromStream(Arrays.stream(StandardTags.values()));
-  }
-
-  private String getAuthenticateUserEmail(
-      OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal) {
-    return String.valueOf(oAuth2AuthenticatedPrincipal.getAttributes().get("email"));
   }
 }

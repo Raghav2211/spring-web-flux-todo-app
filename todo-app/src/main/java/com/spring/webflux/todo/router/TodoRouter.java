@@ -279,7 +279,10 @@ public class TodoRouter {
                             method(HttpMethod.GET),
                             serverRequest ->
                                 todoRouteHandler
-                                    .getTodoById(getSectionId(serverRequest), serverRequest)
+                                    .getTodoById(
+                                        getSectionId(serverRequest),
+                                        getTodoId(serverRequest),
+                                        serverRequest)
                                     .onErrorResume(
                                         InvalidTodoException.class, handleInvalidTodoRequest))
                         .andRoute(

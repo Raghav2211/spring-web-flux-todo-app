@@ -3,6 +3,7 @@ package com.spring.webflux.todo.router;
 import com.spring.webflux.todo.api.AbstractTodoTest;
 import com.spring.webflux.todo.security.SecurityConfig;
 import com.spring.webflux.todo.service.TodoService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
       TodoService.class,
     })
 @WebFluxTest
+@Disabled
 public class TodoRouterTest extends AbstractTodoTest {
   private static final String TODO_ROOT_PATH = "/api/v2/todo";
 
