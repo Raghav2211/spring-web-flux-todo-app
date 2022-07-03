@@ -33,17 +33,17 @@ jobs:
     - name: Grant execute permission for gradlew
       working-directory: ./todo-app
       run: chmod +x gradlew
-    - name: Build with Gradle
+    - name: [Todo-App]Build with Gradle
       working-directory: ./todo-app
       run: ./gradlew build
-    - name: Build with Maven
+    - name: [Todo-App]Build with Maven
       working-directory: ./todo-app
       run: mvn -B package
     - name: Build local image
       working-directory: ./todo-app
       run: |
-        docker build --tag todo:${{env.app_version}} .
-        docker build --build-arg JAR_FILE=build/libs/\*.jar --tag todo:${{env.app_version}} .
+        docker build --build-arg JAR_FILE=target/todo-app-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
+        docker build --build-arg JAR_FILE=build/libs/todo-app-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
     - name: Build local stack
       run: docker-compose -f ci/docker-compose.yaml up -d
     - name: Test local stack

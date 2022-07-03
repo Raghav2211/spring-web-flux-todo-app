@@ -4,7 +4,7 @@ ARG USER=todo
 ARG GROUP=todo
 ARG UID=1000
 ARG GID=1000
-ARG JAR_FILE=target/todo-app-${VERSION}.jar
+ARG JAR_FILE
 RUN groupadd -g ${GID} ${GROUP} && useradd -u ${UID} -g ${GROUP} ${USER}
 USER ${USER}:${GROUP}
 COPY ${JAR_FILE} app.jar
