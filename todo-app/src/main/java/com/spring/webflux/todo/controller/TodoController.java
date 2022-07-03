@@ -65,16 +65,14 @@ public class TodoController {
             content = {@Content(schema = @Schema)})
       })
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Mono<TodoResponse>> getTodoById(
+  public Mono<TodoResponse> getTodoById(
       @Parameter(hidden = true) @AuthenticationPrincipal
           OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal,
       @PathVariable String sectionId,
       @PathVariable String id) {
-    var todoResponse =
-        validateSection(SecurityUtils.getUserId(oAuth2AuthenticatedPrincipal), sectionId)
-            .flatMap(unused -> todoService.findBySectionIdAndId(sectionId, id))
-            .map(TodoMapper.INSTANCE::entityToResponse);
-    return ResponseEntity.ok(todoResponse);
+    return validateSection(SecurityUtils.getUserId(oAuth2AuthenticatedPrincipal), sectionId)
+        .flatMap(unused -> todoService.findBySectionIdAndId(sectionId, id))
+        .map(TodoMapper.INSTANCE::entityToResponse);
   }
 
   @Operation(summary = "Persist todo", operationId = "createTodo")
@@ -97,16 +95,14 @@ public class TodoController {
   @PostMapping(
       produces = MediaType.APPLICATION_JSON_VALUE,
       consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Mono<TodoResponse>> createTodo(
+  public Mono<TodoResponse> createTodo(
       @Parameter(hidden = true) @AuthenticationPrincipal
           OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal,
       @PathVariable String sectionId,
       @RequestBody Mono<TodoRequest> requestTodo) {
-    var todoResponse =
-        validateSection(SecurityUtils.getUserId(oAuth2AuthenticatedPrincipal), sectionId)
-            .flatMap(unused -> todoService.create(sectionId, requestTodo))
-            .map(TodoMapper.INSTANCE::entityToResponse);
-    return new ResponseEntity<>(todoResponse, HttpStatus.CREATED);
+    return validateSection(SecurityUtils.getUserId(oAuth2AuthenticatedPrincipal), sectionId)
+        .flatMap(unused -> todoService.create(sectionId, requestTodo))
+        .map(TodoMapper.INSTANCE::entityToResponse);
   }
 
   @Operation(summary = "Get all todos", operationId = "getAllTodo")
