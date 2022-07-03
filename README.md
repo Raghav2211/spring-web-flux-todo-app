@@ -17,45 +17,95 @@ TODO App uses following technologies:
 * [Docker-19.03.8] - OS level virtualization
 
 ## Build ##
-##### Maven #####
-Build application using below command
+1. Todo App
+   ##### Maven #####
+    Build application using below command
+    ```bash
+      # Go to folder
+      cd ./todo-app
+    ```
+    ```bash
+    mvn clean install
+    ```
+    or
+    
+    ```bash
+    ./mvnw clean install
+    ```
+    
+    ##### Gradle #####
+    Build application using below command
+    
+    ```bash
+    gradle clean build
+    ```
+    or
+    
+    ```bash
+    ./gradlew clean build
+    ```
+    ##### Docker image #####
+    
+    ```bash
+    docker pull ghcr.io/raghav2211/spring-web-flux-todo-app/todo:2.0.0
+    ```
+    or
+    
+    ```bash
+    
+    docker build --tag todo:2.0.0 .
+    ```
+    If you use Gradle, you can run it with the following command
+    
+    ```bash
+    docker build --build-arg JAR_FILE=build/libs/\*.jar --tag todo:2.0.0 .
+    ```
+2. Edge Service
+   ```bash
+      # Go to folder
+      cd ./edge-service
+    ```
+   ##### Maven #####
+   Build application using below command
 
-```bash
-mvn clean install
-```
-or
+    ```bash
+    mvn clean install
+    ```
+   or
 
-```bash
-./mvnw clean install
-```
+    ```bash
+    ./mvnw clean install
+    ``` 
+   
+   ##### Gradle #####
+   Build application using below command
 
-##### Gradle #####
-Build application using below command
+    ```bash
+    gradle clean build
+    ```
+   or
 
-```bash
-gradle clean build
-```
-or
+    ```bash
+    ./gradlew clean build
+    ```
+   ##### Docker image #####
 
-```bash
-./gradlew clean build
-```
-##### Docker image #####
+    ```bash
+    docker pull ghcr.io/raghav2211/spring-web-flux-todo-app/edge-service:2.0.0
+    ```
+   or
 
-```bash
-docker pull ghcr.io/raghav2211/spring-web-flux-todo-app/todo:2.0.0
-```
-or
+    ```bash
+    
+    docker build --tag edge-service:2.0.0 .
+    ```
+   If you use Gradle, you can run it with the following command
 
-```bash
+    ```bash
+    docker build --build-arg JAR_FILE=build/libs/\*.jar --tag edge-service:2.0.0 .
+    ```
+    
 
-docker build --tag todo:2.0.0 .
-```
-If you use Gradle, you can run it with the following command
-
-```bash
-docker build --build-arg JAR_FILE=build/libs/\*.jar --tag todo:2.0.0 .
-```
 
 ## Deploy ##
  
