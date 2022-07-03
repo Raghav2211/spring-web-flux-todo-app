@@ -344,9 +344,13 @@ public class TodoRouter {
             principal ->
                 ((BearerTokenAuthentication) principal).getPrincipal()
                     instanceof OAuth2AuthenticatedPrincipal)
+        .switchIfEmpty(
+            Mono.error(() -> new IllegalArgumentException("Authentication principal is not valid")))
         .cast(BearerTokenAuthentication.class)
         .map(bearerTokenAuthentication -> bearerTokenAuthentication.getPrincipal())
         .filter(principal -> principal instanceof OAuth2AuthenticatedPrincipal)
+        .switchIfEmpty(
+            Mono.error(() -> new IllegalArgumentException("Authentication principal is not valid")))
         .cast(OAuth2AuthenticatedPrincipal.class);
   }
 

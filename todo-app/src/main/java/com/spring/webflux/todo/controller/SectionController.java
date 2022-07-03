@@ -5,12 +5,11 @@ import com.spring.webflux.todo.dto.response.SectionResponse;
 import com.spring.webflux.todo.exception.InvalidSectionRuntimeException;
 import com.spring.webflux.todo.mapper.SectionMapper;
 import com.spring.webflux.todo.repository.SectionRepository;
+import com.spring.webflux.todo.security.SecurityUtils;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -27,24 +26,20 @@ public class SectionController {
   @PostMapping(
       produces = MediaType.APPLICATION_JSON_VALUE,
       consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Mono<SectionResponse>> createSection(
+  public Mono<SectionResponse> createSection(
       @Parameter(hidden = true) @AuthenticationPrincipal
           OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal,
       @RequestBody Mono<SectionRequest> requestMono) {
-    var addSectionRequest =
-        requestMono
-            .flatMap(
-                sectionRequest ->
-                    sectionRepository
-                        .save(
-                            SectionMapper.INSTANCE.requestToEntity(
-                                getAuthenticateUserEmail(oAuth2AuthenticatedPrincipal),
-                                sectionRequest))
-                        .switchIfEmpty(
-                            Mono.error(
-                                new InvalidSectionRuntimeException(sectionRequest.getName()))))
-            .map(section -> SectionMapper.INSTANCE.entityToResponse(section));
-    return new ResponseEntity<Mono<SectionResponse>>(addSectionRequest, HttpStatus.CREATED);
+    return requestMono
+        .flatMap(
+            sectionRequest ->
+                sectionRepository
+                    .save(
+                        SectionMapper.INSTANCE.requestToEntity(
+                            SecurityUtils.getUserId(oAuth2AuthenticatedPrincipal), sectionRequest))
+                    .switchIfEmpty(
+                        Mono.error(new InvalidSectionRuntimeException(sectionRequest.getName()))))
+        .map(section -> SectionMapper.INSTANCE.entityToResponse(section));
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -52,7 +47,7 @@ public class SectionController {
       @Parameter(hidden = true) @AuthenticationPrincipal
           OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal) {
     return sectionRepository
-        .findByUserId(getAuthenticateUserEmail(oAuth2AuthenticatedPrincipal))
+        .findByUserId(SecurityUtils.getUserId(oAuth2AuthenticatedPrincipal))
         .map(section -> SectionMapper.INSTANCE.entityToResponse(section));
   }
 
