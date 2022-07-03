@@ -95,6 +95,17 @@ public class TodoRouteHandler {
                     .body(BodyInserters.fromValue(todoResponse)));
   }
 
+  public Mono<ServerResponse> disable(
+      @Parameter(hidden = true) Mono<OAuth2AuthenticatedPrincipal> oAuth2AuthenticatedPrincipalMono,
+      String sectionId,
+      String id) {
+    return validateSection(oAuth2AuthenticatedPrincipalMono, sectionId)
+        .flatMap(unused -> todoRepository.existsById(id).filter(Boolean::booleanValue))
+        .switchIfEmpty(Mono.error(() -> new InvalidTodoException(id)))
+        .flatMap(todoId -> todoRepository.disableTodo(id))
+        .then(ServerResponse.ok().build());
+  }
+
   public Mono<ServerResponse> deleteTodo(
       @Parameter(hidden = true) Mono<OAuth2AuthenticatedPrincipal> oAuth2AuthenticatedPrincipalMono,
       String sectionId,

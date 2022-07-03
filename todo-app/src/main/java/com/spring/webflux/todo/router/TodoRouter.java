@@ -50,7 +50,6 @@ public class TodoRouter {
                       .build()
                   : ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
-  @Bean
   @RouterOperations({
     @RouterOperation(
         path = "/api/v2/{sectionId}/todo/{id}",
@@ -237,6 +236,29 @@ public class TodoRouter {
                 },
                 security = {@SecurityRequirement(name = "bearerAuth")})),
     @RouterOperation(
+        path = "/api/v2/{sectionId}/todo/{id}/disable",
+        method = RequestMethod.PUT,
+        beanClass = TodoRouteHandler.class,
+        beanMethod = "disable",
+        operation =
+            @Operation(
+                summary = "Disable todo",
+                operationId = "disable",
+                parameters = {
+                  @Parameter(
+                      in = ParameterIn.PATH,
+                      name = "sectionId",
+                      schema = @Schema(type = "string")),
+                  @Parameter(in = ParameterIn.PATH, name = "id", schema = @Schema(type = "string"))
+                },
+                responses = {
+                  @ApiResponse(
+                      responseCode = "200",
+                      description = "Disable todo successfully",
+                      content = {@Content(schema = @Schema)})
+                },
+                security = {@SecurityRequirement(name = "bearerAuth")})),
+    @RouterOperation(
         path = "/api/v2/{sectionId}/todo/standardTags",
         method = RequestMethod.GET,
         beanClass = TodoRouteHandler.class,
@@ -259,6 +281,7 @@ public class TodoRouter {
                 },
                 security = {@SecurityRequirement(name = "bearerAuth")}))
   })
+  @Bean
   public RouterFunction<ServerResponse> route(TodoRouteHandler todoRouteHandler) {
     return nest(
         path("/api/v2/{sectionId}/todo"),
@@ -272,8 +295,13 @@ public class TodoRouter {
                             method(HttpMethod.GET), routeToFindTodoById(todoRouteHandler))
                         .andRoute(method(HttpMethod.PUT), routeToUpdateTodo(todoRouteHandler))
                         .andRoute(
-                            method(HttpMethod.DELETE), routeToDeleteTodoById(todoRouteHandler)))
-                .andRoute(path("/standardTags"), routeToGetStandardTags(todoRouteHandler))
+                            method(HttpMethod.DELETE), routeToDeleteTodoById(todoRouteHandler))
+                        .andRoute(
+                            path("/disable").and(method(HttpMethod.PUT)),
+                            routeToDisableTodo(todoRouteHandler))
+                        .andRoute(
+                            path("/standardTags").and(method(HttpMethod.GET)),
+                            routeToGetStandardTags(todoRouteHandler)))
                 .andRoute(path("/{id}"), this::badRequest)));
   }
 
@@ -328,6 +356,17 @@ public class TodoRouter {
                 getSectionId(serverRequest),
                 serverRequest)
             .onErrorResume(TodoRuntimeException.class, handleInvalidTodoRequest);
+  }
+
+  private HandlerFunction<ServerResponse> routeToDisableTodo(TodoRouteHandler todoRouteHandler) {
+    return serverRequest ->
+        todoRouteHandler
+            .disable(
+                getAuthenticatedPrincipal(serverRequest),
+                getSectionId(serverRequest),
+                getTodoId(serverRequest))
+            .onErrorResume(TodoRuntimeException.class, handleInvalidTodoRequest)
+            .onErrorResume(InvalidTodoException.class, handleInvalidTodoRequest);
   }
 
   private Mono<ServerResponse> badRequest(ServerRequest request) {
