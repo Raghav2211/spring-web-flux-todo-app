@@ -33,10 +33,10 @@ jobs:
     - name: Grant execute permission for gradlew
       working-directory: ./todo-app
       run: chmod +x gradlew
-    - name: [Todo-App]Build with Gradle
+    - name: Build with Gradle[Todo-App]
       working-directory: ./todo-app
       run: ./gradlew build
-    - name: [Todo-App]Build with Maven
+    - name: Build with Maven[Todo-App]
       working-directory: ./todo-app
       run: mvn -B package
     - name: Build local image
