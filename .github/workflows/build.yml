@@ -42,8 +42,8 @@ jobs:
     - name: Build local image
       working-directory: ./todo-app
       run: |
-        docker build --build-arg JAR_FILE=target/todo-app-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
-        docker build --build-arg JAR_FILE=build/libs/todo-app-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
+        docker build --build-arg JAR_FILE=target/todo-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
+        docker build --build-arg JAR_FILE=build/libs/todo-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
     - name: Build local stack
       run: docker-compose -f ci/docker-compose.yaml up -d
     - name: Test local stack
