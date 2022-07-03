@@ -7,7 +7,6 @@ import com.spring.webflux.todo.exception.TodoRuntimeException;
 import com.spring.webflux.todo.mapper.TodoMapper;
 import com.spring.webflux.todo.repository.TodoRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -42,12 +41,20 @@ public class TodoService implements ITodoService {
   public Mono<Todo> findBySectionIdAndId(String sectionId, String id) {
     return todoRepository
         .findBySectionIdAndId(sectionId, id)
-        .switchIfEmpty(Mono.error(new InvalidTodoException(id, "Todo not found")))
+        .switchIfEmpty(Mono.error(new InvalidTodoException(id)))
         .subscribeOn(Schedulers.boundedElastic());
   }
 
   public Flux<Todo> findAllBySectionId(String sectionId) {
     return todoRepository.findAllBySectionId(sectionId);
+  }
+
+  public Mono<Boolean> existsBySectionIdAndId(String sectionId, String todoId) {
+    return todoRepository.existsById(todoId);
+  }
+
+  public Mono<Void> disable(String id) {
+    return Mono.just(id).flatMap(todoId -> todoRepository.disableTodo(todoId));
   }
 
   public Mono<Void> delete(String userId, String id) {
@@ -58,8 +65,6 @@ public class TodoService implements ITodoService {
     return todoResourceMono
         .filter(todoResource -> StringUtils.hasText(todoResource.getTask()))
         .switchIfEmpty(
-            Mono.error(
-                new TodoRuntimeException(
-                    HttpStatus.BAD_REQUEST, String.format("Todo content cannot be empty"))));
+            Mono.error(new TodoRuntimeException(String.format("Todo content cannot be empty"))));
   }
 }

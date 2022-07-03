@@ -14,5 +14,6 @@ public class Todo {
   private String sectionId;
   @EqualsAndHashCode.Include private String task;
   @EqualsAndHashCode.Include private Schedule schedule;
+  @EqualsAndHashCode.Include private Boolean isActive = true;
   private Set<String> tags;
 }

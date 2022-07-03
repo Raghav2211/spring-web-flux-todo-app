@@ -24,6 +24,7 @@ import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
@@ -40,14 +41,14 @@ public class TodoRouter {
       handleInvalidTodoRequest =
           todoException ->
               todoException instanceof InvalidTodoException
-                  ? ServerResponse.status(todoException.getHttpStatus())
+                  ? ServerResponse.status(HttpStatus.NOT_FOUND)
                       .headers(
                           httpHeaders ->
                               httpHeaders.add(
                                   REQUEST_HEADER_ID,
                                   ((InvalidTodoException) todoException).getTodoId().toString()))
                       .build()
-                  : ServerResponse.status(todoException.getHttpStatus()).build();
+                  : ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
   @Bean
   @RouterOperations({

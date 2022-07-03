@@ -1,5 +1,6 @@
 package com.spring.webflux.todo.exception;
 
+import java.util.Map;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import reactor.core.publisher.Mono;
 
 @RestControllerAdvice
 public class TodoExceptionHandler {
@@ -22,7 +24,7 @@ public class TodoExceptionHandler {
   }
 
   @ExceptionHandler(TodoRuntimeException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public @ResponseBody ResponseEntity handleTodoRuntimeException(
       final TodoRuntimeException exception) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
@@ -30,18 +32,30 @@ public class TodoExceptionHandler {
 
   @ExceptionHandler(InvalidTodoException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  public @ResponseBody ResponseEntity handleInvalidTodoException(
-      final InvalidTodoException exception) {
-    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .header("id", String.valueOf(exception.getTodoId()))
-        .body(exception.getMessage());
+  public @ResponseBody Mono<ErrorResponse> handleInvalidTodoException(
+      final InvalidTodoException invalidTodoException) {
+    return Mono.just(invalidTodoException)
+        .map(
+            exception -> {
+              var errorResponse = new ErrorResponse();
+              errorResponse.setMessage(exception.getMessage());
+              errorResponse.setMeta(Map.of("todoId", exception.getTodoId()));
+              return errorResponse;
+            });
   }
 
   @ExceptionHandler(InvalidSectionRuntimeException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public @ResponseBody ResponseEntity handleInvalidTodoException(
-      final InvalidSectionRuntimeException exception) {
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception);
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public @ResponseBody Mono<ErrorResponse> handleInvalidSectionRuntimeException(
+      final InvalidSectionRuntimeException invalidSectionRuntimeException) {
+    return Mono.just(invalidSectionRuntimeException)
+        .map(
+            exception -> {
+              var errorResponse = new ErrorResponse();
+              errorResponse.setMessage(exception.getMessage());
+              errorResponse.setMeta(Map.of("sectionId", exception.getSection()));
+              return errorResponse;
+            });
   }
 
   @ExceptionHandler(EmptyResultDataAccessException.class)

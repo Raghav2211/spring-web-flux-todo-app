@@ -4,6 +4,7 @@ import com.spring.webflux.todo.dto.StandardTags;
 import com.spring.webflux.todo.dto.request.TodoRequest;
 import com.spring.webflux.todo.dto.response.TodoResponse;
 import com.spring.webflux.todo.exception.InvalidSectionRuntimeException;
+import com.spring.webflux.todo.exception.InvalidTodoException;
 import com.spring.webflux.todo.mapper.TodoMapper;
 import com.spring.webflux.todo.repository.SectionRepository;
 import com.spring.webflux.todo.security.SecurityUtils;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.Arrays;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -32,14 +34,11 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping(value = {"/api/v1/{sectionId}/todo"})
 @SecurityRequirement(name = "bearerAuth")
+@RequiredArgsConstructor
 public class TodoController {
   public static final String REQUEST_HEADER_ID = "id";
-  private ITodoService todoService;
-  private SectionRepository sectionRepository;
-
-  public TodoController(ITodoService todoService) {
-    this.todoService = todoService;
-  }
+  private final ITodoService todoService;
+  private final SectionRepository sectionRepository;
 
   @Operation(summary = "Get a todo by its id", operationId = "getTodoById")
   @Parameter(in = ParameterIn.PATH, name = "sectionId", schema = @Schema(type = "string"))
@@ -80,7 +79,7 @@ public class TodoController {
   @ApiResponses(
       value = {
         @ApiResponse(
-            responseCode = "201",
+            responseCode = "200",
             description = "Todo successfully created",
             content = @Content(schema = @Schema(implementation = TodoResponse.class))),
         @ApiResponse(
@@ -166,6 +165,20 @@ public class TodoController {
         .map(TodoMapper.INSTANCE::entityToResponse);
   }
 
+  @PutMapping(value = "/{id}/disable")
+  public Mono<Void> disableTodo(
+      @Parameter(hidden = true) @AuthenticationPrincipal
+          OAuth2AuthenticatedPrincipal oAuth2AuthenticatedPrincipal,
+      @PathVariable String sectionId,
+      @PathVariable String id) {
+    return validateSection(SecurityUtils.getUserId(oAuth2AuthenticatedPrincipal), sectionId)
+        .flatMap(
+            unused ->
+                todoService.existsBySectionIdAndId(sectionId, id).filter(Boolean::booleanValue))
+        .switchIfEmpty(Mono.error(() -> new InvalidTodoException(id)))
+        .flatMap(unused -> todoService.disable(id));
+  }
+
   @Operation(summary = "Delete todo by id", operationId = "deleteTodo")
   @Parameter(in = ParameterIn.PATH, name = "sectionId", schema = @Schema(type = "string"))
   @ApiResponses(
@@ -218,6 +231,7 @@ public class TodoController {
   private Mono<Boolean> validateSection(String userId, String sectionId) {
     return sectionRepository
         .existsByUserIdAndId(userId, sectionId)
+        .filter(Boolean::booleanValue)
         .switchIfEmpty(Mono.error(() -> new InvalidSectionRuntimeException(sectionId)));
   }
 }

@@ -15,7 +15,6 @@ import java.net.URI;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.stereotype.Component;
@@ -117,9 +116,7 @@ public class TodoRouteHandler {
         .filter(todoResource -> StringUtils.hasText(todoResource.getTask()))
         .switchIfEmpty(
             Mono.error(
-                () ->
-                    new TodoRuntimeException(
-                        HttpStatus.BAD_REQUEST, String.format("Todo content cannot be empty"))));
+                () -> new TodoRuntimeException(String.format("Todo content cannot be empty"))));
   }
 
   private Mono<Boolean> validateSection(
