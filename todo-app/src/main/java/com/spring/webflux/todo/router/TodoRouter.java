@@ -298,10 +298,10 @@ public class TodoRouter {
                             method(HttpMethod.DELETE), routeToDeleteTodoById(todoRouteHandler))
                         .andRoute(
                             path("/disable").and(method(HttpMethod.PUT)),
-                            routeToDisableTodo(todoRouteHandler))
-                        .andRoute(
-                            path("/standardTags").and(method(HttpMethod.GET)),
-                            routeToGetStandardTags(todoRouteHandler)))
+                            routeToDisableTodo(todoRouteHandler)))
+                .andRoute(
+                    path("/standardTags").and(method(HttpMethod.GET)),
+                    routeToGetStandardTags(todoRouteHandler))
                 .andRoute(path("/{id}"), this::badRequest)));
   }
 
