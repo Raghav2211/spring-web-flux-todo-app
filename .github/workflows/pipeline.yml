@@ -50,9 +50,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Build with Maven
-        run: |
-          cd app/todo-app
-          mvn -B package
+        working-directory: app/todo-app
+        run: mvn -B package
       - run: |
           ls
           mkdir artifact && cp app/todo-app/target/todo-${{env.app_version}}.jar artifact && cp app/todo-app/Dockerfile artifact
