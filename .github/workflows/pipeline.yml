@@ -116,5 +116,4 @@ jobs:
       - name: Build local image
         working-directory: artifact/todo
         run: |
-          cd artifact
           docker build --build-arg JAR_FILE=gradle/todo-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
