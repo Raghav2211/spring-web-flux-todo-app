@@ -35,6 +35,7 @@ jobs:
         working-directory: ./todo-app
         run: mvn -B package
       - run: |
+          ls
           mkdir artifact && cp target/*.jar artifact && cp Dockerfile artifact
       - uses: actions/upload-artifact@v2
         with:
