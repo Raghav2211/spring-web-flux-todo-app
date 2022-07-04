@@ -245,7 +245,7 @@ jobs:
           name: todo-docker-artifact
           path: artifact/todo/docker
       - name: Build local stack
-        working-directory: artifact/todo/docker
+        working-directory: artifact/todo
         run: |
           ls
           docker load < image.tar
