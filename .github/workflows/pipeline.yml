@@ -22,7 +22,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-          ls
           mkdir app && cp -R ci app && cp -R edge-service app && cp -R todo-app app && cp -R .git app
       - uses: actions/upload-artifact@v2
         with:
@@ -57,7 +56,6 @@ jobs:
         working-directory: app/todo-app
         run: mvn -B package
       - run: |
-          ls
           mkdir -p artifact/todo/maven && cp app/todo-app/target/todo-${{env.app_version}}.jar artifact/todo/maven && cp app/todo-app/Dockerfile artifact/todo
       - uses: actions/upload-artifact@v2
         with:
@@ -95,7 +93,6 @@ jobs:
         working-directory: app/todo-app
         run: ./gradlew build
       - run: |
-          ls
           mkdir -p artifact/todo/gradle && cp app/todo-app/build/libs/todo-${{env.app_version}}.jar artifact/todo/gradle && cp app/todo-app/Dockerfile artifact/todo
       - uses: actions/upload-artifact@v2
         with:
@@ -129,7 +126,6 @@ jobs:
         working-directory: app/edge-service
         run: mvn -B package
       - run: |
-          ls
           mkdir -p artifact/edge-service/maven && cp app/edge-service/target/edge-service-${{env.edge-service_version}}.jar artifact/edge-service/maven && cp app/edge-service/Dockerfile artifact/edge-service
       - uses: actions/upload-artifact@v2
         with:
@@ -271,7 +267,6 @@ jobs:
       - name: Build local stack
         working-directory: artifact
         run: |
-          ls
           docker load < todo/docker/image.tar
           docker load < edge-service/docker/image.tar
           docker-compose -f edge-service/docker-compose.yaml up -d
