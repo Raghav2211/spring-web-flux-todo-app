@@ -255,6 +255,7 @@ jobs:
         run: |
           ls
           docker load < todo/docker/image.tar
+          docker load < edge-service/docker/image.tar
           docker-compose -f edge-service/docker-compose.yaml up -d
       - name: Test local stack
         run: |
