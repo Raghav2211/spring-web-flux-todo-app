@@ -247,6 +247,7 @@ jobs:
       - name: Build local stack
         working-directory: artifact/todo/docker
         run: |
+          ls
           docker load < image.tar
           docker-compose -f ci/docker-compose.yaml up -d
       - name: Test local stack
