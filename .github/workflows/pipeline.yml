@@ -115,7 +115,5 @@ jobs:
           path: artifact
       - name: Build local image
         run: |
-          ls
           cd artifact
-          docker build --build-arg JAR_FILE=build/libs/todo-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
-
+          docker build --build-arg JAR_FILE=todo-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
