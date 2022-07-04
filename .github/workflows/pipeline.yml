@@ -223,12 +223,13 @@ jobs:
           name: Package
           path: artifact
       - name: Build local image
-        working-directory: artifact/edge-service
+        working-directory: artifact
         run: |
-          docker build --build-arg JAR_FILE=gradle/edge-service-${{env.edge-service_version}}.jar --tag edge-service:${{env.edge-service_version}} .
+          docker build --build-arg JAR_FILE=edge-service/gradle/edge-service-${{env.edge-service_version}}.jar --tag edge-service:${{env.edge-service_version}} .
           mkdir -p docker
           docker save edge-service:${{env.edge-service_version}} > docker/image.tar
           echo "edge-service:${{env.edge-service_version}}" > docker/tag
+          cp edge-service/docker-compose.yaml docker
       - uses: actions/upload-artifact@v2
         with:
           name: edge-service-docker-artifact
@@ -245,11 +246,11 @@ jobs:
           name: todo-docker-artifact
           path: artifact/todo/docker
       - name: Build local stack
-        working-directory: artifact/todo
+        working-directory: artifact
         run: |
           ls
-          docker load < image.tar
-          docker-compose -f ci/docker-compose.yaml up -d
+          docker load < todo/image.tar
+          docker-compose -f edge-service/docker-compose.yaml up -d
       - name: Test local stack
         run: |
           sleep 120
