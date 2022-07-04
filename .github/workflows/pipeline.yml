@@ -76,6 +76,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 11
+          distribution: temurin
           cache: gradle
       - name: Grant execute permission for gradlew
         working-directory: app/todo-app
@@ -138,6 +139,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 11
+          distribution: temurin
           cache: gradle
       - name: Grant execute permission for gradlew
         working-directory: app/edge-service
