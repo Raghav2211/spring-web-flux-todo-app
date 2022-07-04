@@ -71,8 +71,8 @@ jobs:
           path: artifact
       - name: Build local image
         run: |
-          ls
-          docker build --build-arg JAR_FILE=artifact/todo-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
+          cd artifact
+          docker build --build-arg JAR_FILE=todo-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
   package-artifact-gradle:
     name: Create docker image using gradle
     runs-on: ubuntu-latest
