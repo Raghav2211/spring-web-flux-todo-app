@@ -36,7 +36,7 @@ jobs:
         run: mvn -B package
       - run: |
           ls
-          mkdir artifact && cp target/*.jar artifact && cp Dockerfile artifact
+          mkdir artifact && cp todo-app/target/todo-${{env.app_version}}.jar artifact && cp todo-app/Dockerfile artifact
       - uses: actions/upload-artifact@v2
         with:
           name: Package
