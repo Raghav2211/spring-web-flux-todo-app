@@ -55,6 +55,8 @@ jobs:
     name: Create docker image using maven
     runs-on: ubuntu-latest
     needs: [build-todo-app-maven]
+    permissions:
+      contents: read
     steps:
       - name: Build local image
         working-directory: ./todo-app
@@ -63,7 +65,9 @@ jobs:
   package-artifact-gradle:
     name: Create docker image using gradle
     runs-on: ubuntu-latest
-    needs: [ build-todo-app-gradle ]
+    needs: [build-todo-app-gradle]
+    permissions:
+      contents: read
     steps:
       - name: Build local image
         working-directory: ./todo-app
