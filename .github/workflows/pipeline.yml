@@ -81,6 +81,16 @@ jobs:
       - name: Grant execute permission for gradlew
         working-directory: app/todo-app
         run: chmod +x gradlew
+      - name: Setup Gradle Dependencies Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle') }}
+      - name: Setup Gradle Wrapper Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
       - name: Build with Gradle
         working-directory: app/todo-app
         run: ./gradlew build
@@ -144,6 +154,16 @@ jobs:
       - name: Grant execute permission for gradlew
         working-directory: app/edge-service
         run: chmod +x gradlew
+      - name: Setup Gradle Dependencies Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle') }}
+      - name: Setup Gradle Wrapper Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
       - name: Build with Gradle
         working-directory: app/edge-service
         run: ./gradlew build
