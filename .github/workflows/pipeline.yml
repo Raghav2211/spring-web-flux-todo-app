@@ -233,18 +233,23 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: edge-service-docker-artifact
-          path: artifact/edge-service/docker
+          path: artifact/edge-service
 
   build-local-stack:
     name: Test stack
     runs-on: ubuntu-latest
     needs: [ package-todo-app-docker-gradle , package-edge-service-docker-gradle ]
     steps:
-      - name: Download Docker Image
+      - name: Download Todo Docker Image
         uses: actions/download-artifact@v2
         with:
           name: todo-docker-artifact
           path: artifact/todo/docker
+      - name: Download Edge Service Docker Image
+        uses: actions/download-artifact@v2
+        with:
+          name: edge-service-docker-artifact
+          path: artifact/edge-service
       - name: Build local stack
         working-directory: artifact
         run: |
