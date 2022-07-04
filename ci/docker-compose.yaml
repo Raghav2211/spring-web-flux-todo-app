@@ -11,3 +11,8 @@ services:
       MONGO_HOST: mongodb
       TODO_SECURITY_BASIC_AUTH_USERNAME: gitci
       TODO_SECURITY_BASIC_AUTH_PASSWORD: gitci
+  edge-service:
+    image: edge-service:1.0.0
+    container_name: edge
+    ports:
+      - "8081:8081"

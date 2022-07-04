@@ -1,6 +1,25 @@
 server:
   port: 8081
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    health:
+      sensitive: 'false'
+  health:
+    defaults:
+      enabled: 'true'
+    db:
+      enabled: 'true'
+  endpoint:
+    health:
+      show-details: always
+  info:
+    git:
+      mode: full
+
 logging:
   level:
     root: DEBUG
