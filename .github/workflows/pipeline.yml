@@ -188,7 +188,6 @@ jobs:
           docker build --build-arg JAR_FILE=gradle/todo-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
           mkdir -p docker
           docker save todo:${{env.app_version}} > docker/image.tar
-          echo "todo:${{env.app_version}}" > docker/tag
       - uses: actions/upload-artifact@v2
         with:
           name: todo-docker-artifact
@@ -227,8 +226,7 @@ jobs:
         run: |
           docker build --build-arg JAR_FILE=edge-service/gradle/edge-service-${{env.edge-service_version}}.jar --tag edge-service:${{env.edge-service_version}} -f edge-service/Dockerfile .
           mkdir -p docker
-          docker save edge-service:${{env.edge-service_version}} > docker/image.tar
-          echo "edge-service:${{env.edge-service_version}}" > docker/tag
+          docker save edge-service:${{env.edge-service_version}} > edge-service/docker/image.tar
           cp edge-service/docker-compose.yaml docker
       - uses: actions/upload-artifact@v2
         with:
