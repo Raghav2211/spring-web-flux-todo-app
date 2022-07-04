@@ -225,7 +225,7 @@ jobs:
         working-directory: artifact
         run: |
           docker build --build-arg JAR_FILE=edge-service/gradle/edge-service-${{env.edge-service_version}}.jar --tag edge-service:${{env.edge-service_version}} -f edge-service/Dockerfile .
-          mkdir -p docker
+          mkdir -p edge-service/docker
           docker save edge-service:${{env.edge-service_version}} > edge-service/docker/image.tar
           cp edge-service/docker-compose.yaml docker
       - uses: actions/upload-artifact@v2
