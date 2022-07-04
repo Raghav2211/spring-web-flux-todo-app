@@ -151,7 +151,7 @@ jobs:
           mkdir -p artifact/edge-service/gradle && \
           cp app/edge-service/build/libs/edge-service-${{env.edge-service_version}}.jar artifact/edge-service/gradle && \
           cp app/edge-service/Dockerfile artifact/edge-service && \
-          cp ci/docker-compose.yaml artifact/edge-service \
+          cp app/ci/docker-compose.yaml artifact/edge-service \
           /
       - uses: actions/upload-artifact@v2
         with:
