@@ -29,8 +29,22 @@ jobs:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
-          ${{ runner.os }}-maven-    
-    - name: Grant execute permission for gradlew
+          ${{ runner.os }}-maven-
+    - name: Grant execute permission for gradlew[Edge-Service]
+      working-directory: ./edge-service
+      run: chmod +x gradlew
+    - name: Build with Gradle[Edge-Service]
+      working-directory: ./edge-service
+      run: ./gradlew build
+    - name: Build with Maven[Edge-Service]
+      working-directory: ./edge-service
+      run: mvn -B package
+    - name: Build local image
+      working-directory: ./edge-service
+      run: |
+        docker build --build-arg JAR_FILE=target/edge-service-${{env.app_version}}.jar --tag edge-service:${{env.app_version}} .
+        docker build --build-arg JAR_FILE=build/libs/edge-service-${{env.app_version}}.jar --tag edge-service:${{env.app_version}} .
+    - name: Grant execute permission for gradlew[Todo-App]
       working-directory: ./todo-app
       run: chmod +x gradlew
     - name: Build with Gradle[Todo-App]
