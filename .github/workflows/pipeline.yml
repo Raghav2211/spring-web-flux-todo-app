@@ -249,7 +249,7 @@ jobs:
         working-directory: artifact
         run: |
           ls
-          docker load < todo/image.tar
+          docker load < todo/docker/image.tar
           docker-compose -f edge-service/docker-compose.yaml up -d
       - name: Test local stack
         run: |
