@@ -54,7 +54,7 @@ jobs:
         run: mvn -B package
       - run: |
           ls
-          mkdir artifact && cp app/todo-app/target/todo-${{env.app_version}}.jar artifact && cp app/todo-app/Dockerfile artifact
+          mkdir -p artifact/todo/maven && cp app/todo-app/target/todo-${{env.app_version}}.jar artifact/todo/maven && cp app/todo-app/Dockerfile artifact/todo
       - uses: actions/upload-artifact@v2
         with:
           name: Package
@@ -82,7 +82,7 @@ jobs:
         run: ./gradlew build
       - run: |
           ls
-          mkdir artifact && cp app/todo-app/build/libs/todo-${{env.app_version}}.jar artifact && cp app/todo-app/Dockerfile artifact
+          mkdir -p artifact/todo/gradle && cp app/todo-app/build/libs/todo-${{env.app_version}}.jar artifact/todo/gradle && cp app/todo-app/Dockerfile artifact/todo
       - uses: actions/upload-artifact@v2
         with:
           name: Package
@@ -99,9 +99,9 @@ jobs:
           name: Package
           path: artifact
       - name: Build local image
+        working-directory: artifact/todo
         run: |
-          cd artifact
-          docker build --build-arg JAR_FILE=todo-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
+          docker build --build-arg JAR_FILE=maven/todo-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
   package-artifact-gradle:
     name: Create docker image using gradle
     runs-on: ubuntu-latest
@@ -114,6 +114,7 @@ jobs:
           name: Package
           path: artifact
       - name: Build local image
+        working-directory: artifact/todo
         run: |
           cd artifact
-          docker build --build-arg JAR_FILE=todo-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
+          docker build --build-arg JAR_FILE=gradle/todo-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
