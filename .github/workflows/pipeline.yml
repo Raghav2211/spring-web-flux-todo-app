@@ -186,6 +186,13 @@ jobs:
         working-directory: artifact/todo
         run: |
           docker build --build-arg JAR_FILE=gradle/todo-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
+          mkdir -p artifact/todo/docker
+          docker save todo:${{env.app_version}} > artifact/todo/docker/image.tar
+          echo "todo:${{env.app_version}}" > artifact/todo/docker/tag
+      - uses: actions/upload-artifact@v2
+        with:
+          name: todo-docker-artifact
+          path: artifact/todo/docker
 
 # Package Edge service
   package-edge-service-docker-maven:
