@@ -2,8 +2,6 @@ version: "3.9"
 services:
   mongodb:
     image: mongo
-    ports:
-      - "27017:27017"
   todo:
     image: todo:2.0.0
     container_name: todo
