@@ -60,6 +60,7 @@ jobs:
     steps:
       - name: Build local image
         run: |
+          ls
           docker build --build-arg JAR_FILE=target/todo-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
   package-artifact-gradle:
     name: Create docker image using gradle
@@ -69,6 +70,8 @@ jobs:
       contents: read
     steps:
       - name: Build local image
+        working-directory: ./todo-app
         run: |
+          ls 
           docker build --build-arg JAR_FILE=build/libs/todo-${{env.app_version}}.jar --tag todo:${{env.app_version}} .
 
