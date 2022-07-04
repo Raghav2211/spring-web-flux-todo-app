@@ -189,7 +189,6 @@ jobs:
           mkdir -p docker
           docker save todo:${{env.app_version}} > docker/image.tar
           echo "todo:${{env.app_version}}" > docker/tag
-          ls
       - uses: actions/upload-artifact@v2
         with:
           name: todo-docker-artifact
@@ -227,3 +226,35 @@ jobs:
         working-directory: artifact/edge-service
         run: |
           docker build --build-arg JAR_FILE=gradle/edge-service-${{env.edge-service_version}}.jar --tag edge-service:${{env.edge-service_version}} .
+          mkdir -p docker
+          docker save edge-service:${{env.edge-service_version}} > docker/image.tar
+          echo "edge-service:${{env.edge-service_version}}" > docker/tag
+      - uses: actions/upload-artifact@v2
+        with:
+          name: edge-service-docker-artifact
+          path: artifact/edge-service/docker
+
+  build-local-stack:
+    name: Test stack
+    runs-on: ubuntu-latest
+    needs: [ package-todo-app-docker-gradle , package-edge-service-docker-gradle ]
+    steps:
+      - name: Download Docker Image
+        uses: actions/download-artifact@v2
+        with:
+          name: todo-docker-artifact
+          path: artifact/todo/docker
+      - name: Build local stack
+        working-directory: artifact/todo/docker
+        run: |
+          docker load < image.tar
+          docker-compose -f ci/docker-compose.yaml up -d
+      - name: Test local stack
+        run: |
+          sleep 120
+          docker run --network container:todo appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8080/actuator/health
+      - name: Failure Result
+        if: ${{ failure() }}
+        run: |
+          docker logs mongodb
+          docker logs todo

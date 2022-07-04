@@ -1,15 +1,18 @@
 name: Build
 
+#on:
+#  push:
+#    branches: [ master ]
+#    paths-ignore:
+#      - '**/README.md'
+#  pull_request:
+#    branches: [ master ]
+#    paths-ignore:
+#      - '**/README.md'
 on:
   push:
-    branches: [ master ]
-    paths-ignore:
-      - '**/README.md'
-  pull_request:
-    branches: [ master ]
-    paths-ignore:
-      - '**/README.md'
-
+    branches-ignore:
+      - '**'
 jobs:
   build:
     runs-on: ubuntu-latest
