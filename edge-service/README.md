@@ -25,17 +25,22 @@ or
  ```
 ##### Docker image #####
 
+```bash
+export EDGE_SERVICE_VERSION=<version>
+```
+
+
  ```bash
- docker pull ghcr.io/raghav2211/spring-web-flux-todo-app/edge-service:2.0.0
+ docker pull ghcr.io/raghav2211/spring-web-flux-todo-app/edge-service:${EDGE_SERVICE_VERSION}
  ```
 or
 
  ```bash
  
- docker build --tag edge-service:2.0.0 .
+ docker build --build-arg JAR_FILE=target/edge-service-${EDGE_SERVICE_VERSION}.jar --tag edge-service:${EDGE_SERVICE_VERSION} .
  ```
 If you use Gradle, you can run it with the following command
 
  ```bash
- docker build --build-arg JAR_FILE=build/libs/\*.jar --tag edge-service:2.0.0 .
+ docker build --build-arg JAR_FILE=build/libs/edge-service-${EDGE_SERVICE_VERSION}.jar --tag edge-service:${EDGE_SERVICE_VERSION} .
  ```
