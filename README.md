@@ -13,49 +13,16 @@ TODO App uses following technologies:
 * [Springboot-2.7.0] - Open source Java-based Micro-Service framework
 * [OpenApi-1.6.9] - Rest API documentation
 * [Junit-5.7.0] - Unit test
-* [MySql-8.0.22] - Backend data store
+* [MongoDB-4.2.21] - Backend data store
 * [Docker-19.03.8] - OS level virtualization
 
 ## Build ##
-##### Maven #####
-Build application using below command
+1. Todo App
+   [Build](./todo-app/README.md)
+2. Edge Service
+   [Build](./edge-service/README.md)
+    
 
-```bash
-mvn clean install
-```
-or
-
-```bash
-./mvnw clean install
-```
-
-##### Gradle #####
-Build application using below command
-
-```bash
-gradle clean build
-```
-or
-
-```bash
-./gradlew clean build
-```
-##### Docker image #####
-
-```bash
-docker pull ghcr.io/raghav2211/spring-web-flux-todo-app/todo
-```
-or
-
-```bash
-
-docker build --tag todo:1.0.0 .
-```
-If you use Gradle, you can run it with the following command
-
-```bash
-docker build --build-arg JAR_FILE=build/libs/\*.jar --tag todo:1.0.0 .
-```
 
 ## Deploy ##
  

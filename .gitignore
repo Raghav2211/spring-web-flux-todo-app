@@ -27,12 +27,12 @@ hs_err_pid*
 *.classpath
 *.project
 .gradle
-!gradle/wrapper/gradle-wrapper.jar
+!**/gradle/wrapper/gradle-wrapper.jar
 
 pom.properties
 
 MANIFEST.MF
-/build/
+**/build/
 /bin/
 
 #Remove all public keys 

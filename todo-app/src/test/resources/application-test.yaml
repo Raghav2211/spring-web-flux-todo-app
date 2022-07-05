@@ -1,0 +1,12 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  mongodb:
+    embedded:
+      version: 3.5.5
+todo:
+  security:
+    basic:
+      auth:
+        username: test
+        password: test

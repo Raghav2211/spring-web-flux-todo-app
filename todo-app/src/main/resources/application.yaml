@@ -1,0 +1,47 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    health:
+      sensitive: 'false'
+  health:
+    defaults:
+      enabled: 'true'
+    db:
+      enabled: 'true'
+  endpoint:
+    health:
+      show-details: always
+  info:
+    git:
+      mode: full
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        opaque-token:
+          introspection-uri: https://oauth2.googleapis.com/tokeninfo
+  data:
+    mongodb:
+      uri: mongodb://${MONGO_HOST:localhost}:27017/tododb
+springdoc:
+  api-docs:
+    groups:
+      enabled: 'true'
+todo:
+  security:
+    basic:
+      auth:
+        username: local
+        password: local
+logging:
+  level:
+    reactor.netty.http.client: DEBUG
+    com.spring.webflux.todo: DEBUG
+  pattern:
+    console: '%d{dd-MM-yyyy HH:mm:ss} %magenta([%thread]) %highlight(%-5level) %logger.%M
+      - %msg%n'
+server:
+  error:
+    include-message: always
