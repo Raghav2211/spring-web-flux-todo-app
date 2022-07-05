@@ -29,19 +29,4 @@ public class TodoRequest implements Serializable {
         .map(String::toUpperCase)
         .collect(Collectors.toSet());
   }
-  // TODO : remove
-  //    public static void main(String[] args) throws JsonProcessingException {
-  //    var sc = new Schedule(LocalDateTime.now());
-  //      TodoRequest todoRequest = new TodoRequest("Add test", sc);
-  //
-  //      ObjectMapper objectMapper = new ObjectMapper();
-  //      objectMapper.registerModule(new JavaTimeModule());
-  ////      objectMapper.registerModule(new Jdk8Module());
-  //      System.out.println(objectMapper.writeValueAsString(todoRequest));
-  //
-  //      String serlizeString = "{\"task\":\"Add test\",\"schedule\":{\"start\":\"2022-07-02
-  // 15:37\",\"dayOfWeeks\":[]},\"tags\":[]}";
-  //      System.out.println(objectMapper.readValue(serlizeString,TodoRequest.class
-  //      ));
-  //    }
 }

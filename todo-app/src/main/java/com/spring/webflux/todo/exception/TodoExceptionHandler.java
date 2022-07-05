@@ -8,6 +8,19 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import reactor.core.publisher.Mono;
 
+// spotless:off
+/**
+ * {
+ *   "timestamp": "2022-07-05T14:04:57.129+00:00",
+ *   "path": "/api/v2/2379da84b8924b1b9cb73440084e46c/todo",
+ *   "status": 500,
+ *   "error": "Internal Server Error",
+ *   "message": "Invalid section",
+ *   "requestId": "149b21b3-33"
+ * }
+ */
+
+// spotless:on
 @RestControllerAdvice
 public class TodoExceptionHandler {
 
