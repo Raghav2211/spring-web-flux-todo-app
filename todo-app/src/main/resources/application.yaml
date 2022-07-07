@@ -24,17 +24,12 @@ spring:
           introspection-uri: https://oauth2.googleapis.com/tokeninfo
   data:
     mongodb:
-      uri: mongodb://${MONGO_HOST:localhost}:27017/tododb
+      host: localhost
 springdoc:
   api-docs:
     groups:
       enabled: 'true'
-todo:
-  security:
-    basic:
-      auth:
-        username: local
-        password: local
+
 logging:
   level:
     reactor.netty.http.client: DEBUG
