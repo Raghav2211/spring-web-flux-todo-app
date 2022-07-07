@@ -1,0 +1,20 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: todov1
+          uri: http://todo:8080
+          predicates:
+            - Path=/service/v1/**
+          filters:
+            - TokenRelay=
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/service/v1/(?<segment>.*),/api/v1/$\{segment}
+        - id: todov2
+          uri: http://todo:8080
+          predicates:
+            - Path=/service/v2/**
+          filters:
+            - TokenRelay=
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/service/v2/(?<segment>.*),/api/v2/$\{segment}
