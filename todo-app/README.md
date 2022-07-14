@@ -41,3 +41,14 @@ If you use Gradle, you can run it with the following command
 ```bash
 docker build --build-arg JAR_FILE=build/libs/todo-${TODO_APP_VERSION}.jar --tag todo:${TODO_APP_VERSION} .
 ```
+
+#### Pushing Image to ECR ####
+
+```bash
+$ export AWS_REGION=<aws.region>
+$ export AWS_ACCOUNT_ID=<aws.account.id>
+$ aws ecr create-repository --repository-name todo 
+$ aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+$ docker tag todo:${TODO_APP_VERSION} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/todo:${TODO_APP_VERSION}
+$ docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/todo:${TODO_APP_VERSION}
+```

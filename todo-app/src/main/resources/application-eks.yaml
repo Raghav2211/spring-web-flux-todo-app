@@ -1,0 +1,5 @@
+# Amazon Document DB configuration
+#spring:
+#  data:
+#    mongodb:
+#      host: mongodb
