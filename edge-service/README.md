@@ -50,6 +50,7 @@ If you use Gradle, you can run it with the following command
 ```bash
 $ export AWS_REGION=<aws.region>
 $ export AWS_ACCOUNT_ID=<aws.account.id>
+# create if not exists
 $ aws ecr create-repository --repository-name edge-service 
 $ aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 $ docker tag edge-service:${EDGE_SERVICE_VERSION} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/edge-service:${EDGE_SERVICE_VERSION}
