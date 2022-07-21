@@ -11,16 +11,10 @@ aws:
 
 ---
 spring:
-  cloud:
-    config:
-      uri: http://localhost:8889
   config:
     activate:
-      on-profile: test
+      on-profile: docker
 
 aws:
   kms:
     keyId: arn:aws:kms:eu-west-2:111122223333:key/49c5492b-b1bc-42a8-9a5c-b2015e810c1c
-    endpoint:
-      service-endpoint: http://localhost:4599
-      signing-region: eu-west-1
