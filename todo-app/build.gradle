@@ -26,6 +26,7 @@ sourceSets {
 
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -42,10 +43,16 @@ dependencies {
     implementation 'org.springframework.security:spring-security-test'
     implementation 'org.hibernate.validator:hibernate-validator'
     implementation 'org.projectlombok:lombok'
+
+    implementation "org.springframework.cloud:spring-cloud-starter-config:3.1.1"
+    implementation "org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.1"
+    implementation 'org.zalando:spring-cloud-config-aws-kms:5.2-SNAPSHOT'
+
     annotationProcessor group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: '0.2.0'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
+    
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

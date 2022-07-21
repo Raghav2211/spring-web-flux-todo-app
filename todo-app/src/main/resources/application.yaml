@@ -17,14 +17,14 @@ management:
     git:
       mode: full
 spring:
+  application:
+    name: todo
   security:
     oauth2:
       resourceserver:
         opaque-token:
           introspection-uri: https://oauth2.googleapis.com/tokeninfo
-  data:
-    mongodb:
-      host: localhost
+
 springdoc:
   api-docs:
     groups:
@@ -32,8 +32,7 @@ springdoc:
 
 logging:
   level:
-    reactor.netty.http.client: DEBUG
-    com.spring.webflux.todo: DEBUG
+    root: INFO
   pattern:
     console: '%d{dd-MM-yyyy HH:mm:ss} %magenta([%thread]) %highlight(%-5level) %logger.%M
       - %msg%n'

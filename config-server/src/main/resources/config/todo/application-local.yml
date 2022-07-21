@@ -1,0 +1,6 @@
+spring:
+  data:
+    mongodb:
+      uri: "{cipher}S2Fybjphd3M6a21zOmV1LXdlc3QtMjoxMTExMjIyMjMzMzM6a2V5L2JjNDM2NDg1LTUwOTItNDJiOC05MmEzLTBhYThiOTM1MzZkYwAAAABr3rnYap8fYwRwa7qZ9UAlMIsFuf1SRSD76goD4dbwfxHhHtkxRSNNUMoeoOftof3WqxRA+ZWa/lNm2bsv3FC0xJx03M8Kdw=="
+
+
