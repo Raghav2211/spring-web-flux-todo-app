@@ -42,6 +42,7 @@ or
 If you use Gradle, you can run it with the following command
 
  ```bash
+ 
  docker build --build-arg JAR_FILE=build/libs/edge-service-${EDGE_SERVICE_VERSION}.jar --tag edge-service:${EDGE_SERVICE_VERSION} .
  ```
 

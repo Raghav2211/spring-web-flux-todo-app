@@ -10,6 +10,7 @@ version = '1.0.0'
 sourceCompatibility = '11'
 
 repositories {
+	mavenLocal()
 	mavenCentral()
 }
 
@@ -22,6 +23,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+
+	implementation "org.springframework.cloud:spring-cloud-starter-config:3.1.1"
+	implementation "org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.1"
+	implementation 'org.zalando:spring-cloud-config-aws-kms:5.2-SNAPSHOT'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
 }

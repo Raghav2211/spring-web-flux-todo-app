@@ -25,6 +25,9 @@ or
 docker build --build-arg JAR_FILE=build/libs/config-server-${CONFIG_SERVER_VERSION}.jar --tag config-server:${CONFIG_SERVER_VERSION} .
 ```
 
+#### Access ####
+http://localhost:8888/todo/local
+
 #### Pushing Image to ECR ####
 
 ```bash
