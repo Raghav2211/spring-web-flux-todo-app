@@ -22,11 +22,6 @@ docker pull ghcr.io/raghav2211/spring-web-flux-todo-app/config-server:${CONFIG_S
 or
 
 ```bash
-docker build --build-arg JAR_FILE=target/config-server-${CONFIG_SERVER_VERSION}.jar --tag config-server:${CONFIG_SERVER_VERSION} .
-```
-If you use Gradle, you can run it with the following command
-
-```bash
 docker build --build-arg JAR_FILE=build/libs/config-server-${CONFIG_SERVER_VERSION}.jar --tag config-server:${CONFIG_SERVER_VERSION} .
 ```
 
