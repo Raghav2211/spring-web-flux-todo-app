@@ -2,6 +2,7 @@ spring:
   cloud:
     config:
       uri: http://localhost:8888
+      fail-fast: true
 aws:
   kms:
     keyId: arn:aws:kms:eu-west-2:111122223333:key/bc436485-5092-42b8-92a3-0aa8b93536dc
@@ -14,6 +15,7 @@ spring:
   cloud:
     config:
       uri: http://config-server:8888
+      fail-fast: true
   config:
     activate:
       on-profile: docker
