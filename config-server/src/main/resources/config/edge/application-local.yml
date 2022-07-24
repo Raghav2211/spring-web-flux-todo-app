@@ -1,9 +1,0 @@
-spring:
-  security:
-    oauth2:
-      client:
-        registration:
-          gateway:
-            provider: google
-            clientId: "{cipher}FIXME"
-            clientSecret: "{cipher}FIXME"
