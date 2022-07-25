@@ -256,7 +256,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: config-server-docker-artifact
-          path: artifact/config-server/docker
+          path: artifact/config/docker
 
 # Package Todo app
   package-todo-app-docker-maven:
