@@ -22,9 +22,11 @@ management:
 
 logging:
   level:
-    root: DEBUG
+    root: INFO
 
 spring:
+  application:
+    name: edge
   cloud:
     gateway:
       routes:
@@ -50,8 +52,6 @@ spring:
         registration:
           gateway:
             provider: google
-            clientId: ${CLIENT_ID}
-            clientSecret: ${CLIENT_SECRET}
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope: openid,profile,email

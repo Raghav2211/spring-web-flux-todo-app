@@ -1,0 +1,9 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          gateway:
+            provider: google
+            clientId: "ci"
+            clientSecret: "ci"

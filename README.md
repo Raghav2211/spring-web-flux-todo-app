@@ -21,6 +21,8 @@ TODO App uses following technologies:
    [Build](./todo-app/README.md)
 2. Edge Service
    [Build](./edge-service/README.md)
+3. Config Server
+   [Build](./config-server/README.md)   
     
 
 

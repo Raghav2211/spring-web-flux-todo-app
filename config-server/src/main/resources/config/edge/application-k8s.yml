@@ -1,3 +1,6 @@
+server:
+  port: 8080
+
 spring:
   cloud:
     gateway:
@@ -18,3 +21,11 @@ spring:
             - TokenRelay=
             - RemoveRequestHeader=Cookie
             - RewritePath=/service/v2/(?<segment>.*),/api/v2/$\{segment}
+  security:
+    oauth2:
+      client:
+        registration:
+          gateway:
+            provider: google
+            clientId: "{cipher}FIXME"
+            clientSecret: "{cipher}FIXME"

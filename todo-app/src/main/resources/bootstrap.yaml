@@ -1,0 +1,39 @@
+spring:
+  cloud:
+    config:
+      uri: http://localhost:8888
+      fail-fast: true
+aws:
+  kms:
+    keyId: arn:aws:kms:eu-west-2:111122223333:key/bc436485-5092-42b8-92a3-0aa8b93536dc
+    endpoint:
+      service-endpoint: http://localhost:4599
+      signing-region: eu-west-1
+
+---
+spring:
+  cloud:
+    config:
+      uri: http://config-server:8888
+      fail-fast: true
+  config:
+    activate:
+      on-profile: docker
+
+aws:
+  kms:
+    keyId: arn:aws:kms:eu-west-2:111122223333:key/49c5492b-b1bc-42a8-9a5c-b2015e810c1c
+    endpoint:
+      service-endpoint: http://kms:8080
+      signing-region: eu-west-1
+
+
+---
+spring:
+  cloud:
+    config:
+      uri: http://config-server:8888
+      fail-fast: true
+  config:
+    activate:
+      on-profile: ci
