@@ -1,18 +1,27 @@
 version: "3.9"
 services:
+  
   mongodb:
     image: mongo
+
+  config-server:
+    image: config-server:1.0.0
+    container_name: config-server
+
   todo:
     image: todo:2.0.0
     container_name: todo
+    depends_on:
+      - config-server
     ports:
       - "8080:8080"
     environment:
       MONGO_HOST: mongodb
-      TODO_SECURITY_BASIC_AUTH_USERNAME: gitci
-      TODO_SECURITY_BASIC_AUTH_PASSWORD: gitci
+
   edge-service:
     image: edge-service:1.0.0
     container_name: edge
+    depends_on:
+      - config-server
     ports:
       - "8081:8081"
