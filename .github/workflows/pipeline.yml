@@ -57,7 +57,7 @@ jobs:
         working-directory: app/config-server
         run: mvn -B package
       - run: |
-          mkdir -p artifact/config/maven && cp app/config-server/target/config-server-${{env.config-server_version}}.jar artifact/conifg/maven && cp app/config-server/Dockerfile artifact/config
+          mkdir -p artifact/config/maven && cp app/config-server/target/config-server-${{env.config-server_version}}.jar artifact/config/maven && cp app/config-server/Dockerfile artifact/config
       - uses: actions/upload-artifact@v2
         with:
           name: Package
