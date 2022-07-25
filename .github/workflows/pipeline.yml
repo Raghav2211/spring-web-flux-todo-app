@@ -95,7 +95,6 @@ jobs:
 
 
   # Build Todo App
-
   build-todo-app-maven:
     name: Build Todo App in maven
     runs-on: ubuntu-latest
@@ -233,12 +232,12 @@ jobs:
           name: Package
           path: artifact
       - name: Build local image
-        working-directory: artifact/config-server
+        working-directory: artifact/config
         run: |
           docker build --build-arg JAR_FILE=maven/config-server-${{env.config-server_version}}.jar --tag config-server:${{env.config-server_version}} .
 
   package-config-server-docker-gradle:
-    name: Package todo-app
+    name: Package Config Server
     runs-on: ubuntu-latest
     needs: [build-config-server-gradle]
     permissions:
@@ -249,7 +248,7 @@ jobs:
           name: Package
           path: artifact
       - name: Build local image
-        working-directory: artifact/config-server
+        working-directory: artifact/config
         run: |
           docker build --build-arg JAR_FILE=gradle/config-server-${{env.config-server_version}}.jar --tag config-server:${{env.config-server_version}} .
           mkdir -p docker
