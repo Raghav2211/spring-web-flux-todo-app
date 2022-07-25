@@ -1,22 +1,26 @@
 version: "3.9"
 services:
-  
+
   mongodb:
-    image: mongo
+    image: mongo:4.2.21
 
   config-server:
     image: config-server:1.0.0
     container_name: config-server
+    ports:
+      - "8888:8888"
 
   todo:
     image: todo:2.0.0
     container_name: todo
     depends_on:
       - config-server
+      - mongodb
     ports:
       - "8080:8080"
     environment:
-      MONGO_HOST: mongodb
+      SPRING_PROFILES_ACTIVE: ci
+    restart: on-failure  
 
   edge-service:
     image: edge-service:1.0.0
@@ -25,3 +29,6 @@ services:
       - config-server
     ports:
       - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: ci 
+    restart: on-failure   
