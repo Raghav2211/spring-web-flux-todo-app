@@ -4,6 +4,6 @@ server:
 spring:
   data:
     mongodb:
-      uri: "{cipher}S2Fybjphd3M6a21zOmV1LXdlc3QtMjoxMTExMjIyMjMzMzM6a2V5LzQ5YzU0OTJiLWIxYmMtNDJhOC05YTVjLWIyMDE1ZTgxMGMxYwAAAADGaMCdkNiTRZZRx0ATk14w+v+GpFczr2rTvuoIBSk93+pnbMv29tFyj6Jrjfbzhofm9u/j/sh9soYCOGduT2AlWvZi"
+      uri: "{cipher}S2Fybjphd3M6a21zOmV1LXdlc3QtMjoxMTExMjIyMjMzMzM6a2V5L2JjNDM2NDg1LTUwOTItNDJiOC05MmEzLTBhYThiOTM1MzZkYwAAAADSqo812gHKm22qVq6YXeX6Higf4nH8qc7bnpR3W+ESnzpP5z4XMpDiLiFsy/R1/O9TW4UBgO8zXZvAffAfB72Fd/nU918="
 
 

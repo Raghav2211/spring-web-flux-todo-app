@@ -3,43 +3,19 @@ spring:
     config:
       uri: http://localhost:8080
       fail-fast: true
+---
+spring:
+  cloud:
+    config:
+      uri: http://config-server:8080
+      fail-fast: true
+  config:
+    activate:
+      on-profile: local
+
 aws:
   kms:
     keyId: arn:aws:kms:eu-west-2:111122223333:key/bc436485-5092-42b8-92a3-0aa8b93536dc
-    endpoint:
-      service-endpoint: http://localhost:4599
-      signing-region: eu-west-1
-
----
-spring:
-  cloud:
-    config:
-      uri: http://config-server:8080
-      fail-fast: true
-  config:
-    activate:
-      on-profile: docker
-
-aws:
-  kms:
-    keyId: arn:aws:kms:eu-west-2:111122223333:key/49c5492b-b1bc-42a8-9a5c-b2015e810c1c
-    endpoint:
-      service-endpoint: http://kms:8080
-      signing-region: eu-west-1
-
----
-spring:
-  cloud:
-    config:
-      uri: http://config-server:8080
-      fail-fast: true
-  config:
-    activate:
-      on-profile: k8s
-
-aws:
-  kms:
-    keyId: arn:aws:kms:eu-west-2:111122223333:key/5ef77041-d1e6-4af1-9a41-e49a4b45efb6
     endpoint:
       service-endpoint: http://kms:8080
       signing-region: eu-west-1
@@ -53,3 +29,6 @@ spring:
   config:
     activate:
       on-profile: ci
+aws:
+  kms:
+    enabled: false
