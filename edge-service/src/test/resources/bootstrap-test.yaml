@@ -2,3 +2,7 @@ spring:
   cloud:
     config:
       enabled: false
+
+aws:
+  kms:
+    enabled: false
