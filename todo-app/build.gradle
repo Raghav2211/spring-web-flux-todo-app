@@ -51,6 +51,10 @@ dependencies {
     implementation "org.springframework.cloud:spring-cloud-starter-bootstrap"
     implementation 'org.zalando:spring-cloud-config-aws-kms:5.1.2'
 
+    // enable retry if config server is unreachable
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.retry:spring-retry'
+
     annotationProcessor group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: '0.2.0'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

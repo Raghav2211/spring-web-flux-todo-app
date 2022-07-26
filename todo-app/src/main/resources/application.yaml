@@ -1,3 +1,8 @@
+server:
+  port: 8082
+  error:
+    include-message: always
+
 management:
   endpoints:
     web:
@@ -36,6 +41,3 @@ logging:
   pattern:
     console: '%d{dd-MM-yyyy HH:mm:ss} %magenta([%thread]) %highlight(%-5level) %logger.%M
       - %msg%n'
-server:
-  error:
-    include-message: always

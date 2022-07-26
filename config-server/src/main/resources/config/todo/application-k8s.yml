@@ -1,7 +1,0 @@
-server:
-  port: 8080
-
-spring:
-  data:
-    mongodb:
-      uri: "{cipher}S2Fybjphd3M6a21zOmV1LXdlc3QtMjoxMTExMjIyMjMzMzM6a2V5LzVlZjc3MDQxLWQxZTYtNGFmMS05YTQxLWU0OWE0YjQ1ZWZiNgAAAAAiR3AoMJWkm/Um0dKErWIzklqpKmTTsbyXVEplHgdEgy+LEJnZKZLfI8yO492L4qldhYRXeXsfVM3lOXRsKhUozU/mzUw="
