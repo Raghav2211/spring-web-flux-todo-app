@@ -367,9 +367,9 @@ jobs:
       - name: Test local stack
         run: |
           sleep 120
-          docker run --network container:todo appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8080/actuator/health
+          docker run --network container:todo appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8082/actuator/health
           docker run --network container:edge appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8081/actuator/health
-          docker run --network container:config-server appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8888/actuator/health
+          docker run --network container:config-server appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8080/actuator/health
       - name: Failure Result
         if: ${{ failure() }}
         run: |

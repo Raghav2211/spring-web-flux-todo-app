@@ -8,7 +8,7 @@ services:
     image: config-server:1.0.0
     container_name: config-server
     ports:
-      - "8888:8888"
+      - "8080:8080"
 
   todo:
     image: todo:2.0.0
@@ -17,7 +17,7 @@ services:
       - config-server
       - mongodb
     ports:
-      - "8080:8080"
+      - "8082:8082"
     environment:
       SPRING_PROFILES_ACTIVE: ci
     restart: on-failure  

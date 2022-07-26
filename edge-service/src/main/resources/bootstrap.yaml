@@ -1,7 +1,7 @@
 spring:
   cloud:
     config:
-      uri: http://localhost:8888
+      uri: http://localhost:8080
       fail-fast: true
 aws:
   kms:
@@ -48,7 +48,7 @@ aws:
 spring:
   cloud:
     config:
-      uri: http://config-server:8888
+      uri: http://config-server:8080
       fail-fast: true
   config:
     activate:
