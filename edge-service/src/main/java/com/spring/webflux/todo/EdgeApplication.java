@@ -23,4 +23,9 @@ public class EdgeApplication {
       WebSession session) {
     return Mono.just(new Token(authorizedClient.getAccessToken().getTokenValue(), session.getId()));
   }
+
+  @GetMapping("/todoRequestFallback")
+  public Mono<String> todoRequestFallback() {
+    return Mono.just("default fallback if todo app is unreachable");
+  }
 }

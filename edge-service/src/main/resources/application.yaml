@@ -22,30 +22,15 @@ management:
 
 logging:
   level:
-    root: INFO
+    root: ERROR
+    io:
+      github:
+        resilience4j:
+          circuitbreaker: DEBUG
 
 spring:
   application:
     name: edge
-  cloud:
-    gateway:
-      routes:
-        - id: todov1
-          uri: http://localhost:8080
-          predicates:
-            - Path=/service/v1/**
-          filters:
-            - TokenRelay=
-            - RemoveRequestHeader=Cookie
-            - RewritePath=/service/v1/(?<segment>.*),/api/v1/$\{segment}
-        - id: todov2
-          uri: http://localhost:8080
-          predicates:
-            - Path=/service/v2/**
-          filters:
-            - TokenRelay=
-            - RemoveRequestHeader=Cookie
-            - RewritePath=/service/v2/(?<segment>.*),/api/v2/$\{segment}
   security:
     oauth2:
       client:
@@ -63,3 +48,20 @@ spring:
             user-name-attribute: sub
             jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
             issuer-uri: https://accounts.google.com
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      slidingWindowType: COUNT_BASED
+      #failureRateThreshold: 50 # default value if not set
+      slowCallRateThreshold: 50
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 5
+      waitDurationInOpenState: 10000
+      eventConsumerBufferSize: 10
+      registerHealthIndicator: true
+  instances:
+    todoCircuitBreaker:
+      baseConfig: default
+      waitDurationInOpenState: 5000
+      slowCallDurationThreshold: 500
