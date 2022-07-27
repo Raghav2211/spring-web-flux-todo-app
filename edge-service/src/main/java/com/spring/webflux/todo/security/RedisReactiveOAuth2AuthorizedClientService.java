@@ -1,6 +1,8 @@
 package com.spring.webflux.todo.security;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RMapReactive;
 import org.redisson.api.RedissonReactiveClient;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.Authentication;
@@ -12,25 +14,42 @@ import reactor.core.publisher.Mono;
 @Component
 @Primary
 @RequiredArgsConstructor
+@Slf4j
 public class RedisReactiveOAuth2AuthorizedClientService
     implements ReactiveOAuth2AuthorizedClientService {
   private final RedissonReactiveClient redissonReactiveClient;
 
   @Override
-  public <T extends OAuth2AuthorizedClient> Mono<T> loadAuthorizedClient(
+  public Mono<OAuth2AuthorizedClient> loadAuthorizedClient(
       String clientRegistrationId, String principalName) {
-    return null;
+    log.info(
+        "loadAuthorizedClient with clientRegistrationId {} & principalName {}",
+        clientRegistrationId,
+        principalName);
+    RMapReactive<String, OAuth2AuthorizedClient> authorizedClient =
+        redissonReactiveClient.getMap(principalName);
+    return authorizedClient.get(clientRegistrationId);
   }
 
   @Override
   public Mono<Void> saveAuthorizedClient(
       OAuth2AuthorizedClient authorizedClient, Authentication principal) {
-
-    return null;
+    log.info(
+        "saveAuthorizedClient with clientRegistrationId {} & principalName {}",
+        authorizedClient.getClientRegistration().getRegistrationId(),
+        principal.getName());
+    return redissonReactiveClient
+        .getMap(principal.getName())
+        .put(authorizedClient.getClientRegistration().getRegistrationId(), authorizedClient)
+        .then();
   }
 
   @Override
   public Mono<Void> removeAuthorizedClient(String clientRegistrationId, String principalName) {
-    return null;
+    log.info(
+        "removeAuthorizedClient with clientRegistrationId {} & principalName {}",
+        clientRegistrationId,
+        principalName);
+    return redissonReactiveClient.getMap(principalName).remove(clientRegistrationId).then();
   }
 }

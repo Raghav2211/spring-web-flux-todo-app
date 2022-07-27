@@ -1,4 +1,9 @@
 spring:
+  redis:
+    redisson:
+      config: |
+        singleServerConfig:
+          address: "redis://redis:6379"
   cloud:
     gateway:
       routes:
