@@ -26,10 +26,13 @@ dependencies {
 	implementation "org.springframework.cloud:spring-cloud-starter-config"
 	implementation "org.springframework.cloud:spring-cloud-starter-bootstrap"
 	implementation 'org.zalando:spring-cloud-config-aws-kms:5.1.2'
+	implementation 'org.projectlombok:lombok'
 
 	// enable retry if config server is unreachable
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	implementation 'org.springframework.retry:spring-retry'
+
+	annotationProcessor 'org.projectlombok:lombok'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
