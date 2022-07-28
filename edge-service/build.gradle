@@ -22,17 +22,24 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+	implementation 'org.redisson:redisson-spring-boot-starter:3.17.0'
 
 	implementation "org.springframework.cloud:spring-cloud-starter-config"
 	implementation "org.springframework.cloud:spring-cloud-starter-bootstrap"
 	implementation 'org.zalando:spring-cloud-config-aws-kms:5.1.2'
+	implementation 'org.projectlombok:lombok'
 
 	// enable retry if config server is unreachable
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	implementation 'org.springframework.retry:spring-retry'
 
+	annotationProcessor 'org.projectlombok:lombok'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
+	testImplementation platform('org.testcontainers:testcontainers-bom:1.15.3')
+	testImplementation "org.testcontainers:testcontainers"
+	testImplementation "org.testcontainers:junit-jupiter"
 }
 
 dependencyManagement {

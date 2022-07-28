@@ -4,6 +4,11 @@ services:
   mongodb:
     image: mongo:4.2.21
 
+  redis-server:
+    image: "redis:6.0-alpine"
+    container_name: redis
+    command: redis-server  
+
   config-server:
     image: config-server:1.0.0
     container_name: config-server
@@ -27,6 +32,7 @@ services:
     container_name: edge
     depends_on:
       - config-server
+      - redis-server
     ports:
       - "8081:8081"
     environment:

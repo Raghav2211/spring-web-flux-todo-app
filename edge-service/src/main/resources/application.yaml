@@ -23,6 +23,11 @@ management:
 logging:
   level:
     root: ERROR
+    com:
+      spring:
+        webflux:
+          todo:
+            security: INFO
     io:
       github:
         resilience4j:
