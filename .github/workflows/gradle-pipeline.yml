@@ -214,6 +214,7 @@ jobs:
           docker load < edge-service/docker/image.tar
           docker-compose -f edge-service/docker-compose.yaml up -d
       - name: Test local stack
+        timeout-minutes: 5
         run: |
           sleep 120
           docker run --network container:todo appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8082/actuator/health
@@ -222,6 +223,7 @@ jobs:
       - name: Failure Result
         if: ${{ failure() }}
         run: |
+          docker ps 
           docker logs mongodb
           docker logs todo
           docker logs edge
