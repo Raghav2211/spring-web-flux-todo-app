@@ -120,7 +120,7 @@ jobs:
         working-directory: app/edge-service
         run: mvn -B package
       - run: |
-          mkdir -p artifact/edge-service/maven && cp app/edge-service/target/edge-service-${{env.edge-service_version}}.jar artifact/edge-service/maven && cp app/edge-service/Dockerfile artifact/edge-service
+          mkdir -p artifact/edge-service/maven && cp app/edge-service/target/edge-service-${{env.edge-service_version}}.jar artifact/edge-service/maven && cp app/edge-service/Dockerfile artifact/edge-service && cp app/ci/docker-compose.yaml artifact/edge-service
       - uses: actions/upload-artifact@v2
         with:
           name: Package
