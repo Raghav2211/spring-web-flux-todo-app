@@ -1,6 +1,10 @@
 spring:
+  session:
+    store-type: none
   autoconfigure:
     exclude: org.redisson.spring.starter.RedissonAutoConfiguration
+  main:
+    allow-bean-definition-overriding: true
   security:
     oauth2:
       client:

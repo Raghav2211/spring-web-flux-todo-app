@@ -1,5 +1,6 @@
 package com.spring.webflux.todo;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonReactiveClient;
@@ -18,7 +19,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Import({EdgeApplicationTests.TestConfig.class})
 @ActiveProfiles("test")
 @Testcontainers
@@ -32,7 +33,9 @@ class EdgeApplicationTests {
           .withExposedPorts(REDIS_PORT);
 
   @Test
-  void contextLoads() {}
+  void contextLoads() {
+    Assertions.assertTrue(REDIS.isRunning());
+  }
 
   @TestConfiguration
   static class TestConfig {
