@@ -43,7 +43,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-webflux-core' , version: '1.6.9'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-webflux-ui' , version: '1.6.9'
-    implementation 'org.springframework.security:spring-security-test'
     implementation 'org.hibernate.validator:hibernate-validator'
     implementation 'org.projectlombok:lombok'
 
@@ -57,13 +56,12 @@ dependencies {
 
     annotationProcessor group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: '0.2.0'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
-    
+
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'com.h2database:h2'
+    testImplementation 'org.springframework.security:spring-security-test'
     testImplementation group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo', version: '3.4.6'
 
 }

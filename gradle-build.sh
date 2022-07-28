@@ -1,13 +1,12 @@
 # #!/bin/bash
 
+# clear all dangling image(s) 
+docker rmi $(docker images -f "dangling=true" -q)
+
 export TODO_APP_VERSION=2.0.0
 export EDGE_SERVICE_VERSION=1.0.0
 export CONFIG_SERVER_VERSION=1.0.0
 
-# remove images if exists
-docker rmi config-server:${CONFIG_SERVER_VERSION}
-docker rmi edge-service:${EDGE_SERVICE_VERSION}
-docker rmi todo:${TODO_APP_VERSION}
 
 # config server
 config-server/gradlew clean build -p config-server -x test

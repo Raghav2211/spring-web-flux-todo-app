@@ -9,6 +9,7 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
+import org.springframework.security.web.server.savedrequest.NoOpServerRequestCache;
 
 @EnableWebFluxSecurity
 @Configuration
@@ -19,6 +20,9 @@ public class SecurityConfig {
   SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
     return http.csrf()
         .disable()
+        .requestCache()
+        .requestCache(NoOpServerRequestCache.getInstance())
+        .and()
         .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
         .authorizeExchange()
         .pathMatchers(
