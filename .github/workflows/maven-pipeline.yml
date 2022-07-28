@@ -182,9 +182,9 @@ jobs:
           name: Package
           path: artifact
       - name: Build local image
-        working-directory: artifact/edge-service
+        working-directory: artifact
         run: |
-          docker build --build-arg JAR_FILE=maven/edge-service-${{env.edge-service_version}}.jar --tag edge-service:${{env.edge-service_version}} .
+          docker build --build-arg JAR_FILE=edge-service/maven/edge-service-${{env.edge-service_version}}.jar --tag edge-service:${{env.edge-service_version}} -f edge-service/Dockerfile .
           mkdir -p edge-service/docker
           docker save edge-service:${{env.edge-service_version}} > edge-service/docker/image.tar
           cp edge-service/docker-compose.yaml docker
