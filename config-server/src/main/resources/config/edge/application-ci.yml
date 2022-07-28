@@ -4,6 +4,7 @@ spring:
       config: |
         singleServerConfig:
           address: "redis://redis:6379"
+          clientName: edge-service
   security:
     oauth2:
       client:
