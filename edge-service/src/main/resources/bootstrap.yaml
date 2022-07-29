@@ -28,6 +28,23 @@ spring:
       fail-fast: true
   config:
     activate:
+      on-profile: k8s
+
+aws:
+  kms:
+    keyId: arn:aws:kms:eu-west-2:111122223333:key/bc436485-5092-42b8-92a3-0aa8b93536dc
+    endpoint:
+      service-endpoint: http://kms:8080
+      signing-region: eu-west-1
+
+---
+spring:
+  cloud:
+    config:
+      uri: http://config-server:8080
+      fail-fast: true
+  config:
+    activate:
       on-profile: ci
 aws:
   kms:
