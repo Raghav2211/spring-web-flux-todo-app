@@ -1,5 +1,6 @@
 # TODO APP
-[![Pipeline](https://github.com/Raghav2211/spring-web-flux-todo-app/actions/workflows/pipeline.yml/badge.svg?branch=master)](https://github.com/Raghav2211/spring-web-flux-todo-app/actions/workflows/pipeline.yml)
+[![Gradle Pipeline](https://github.com/Raghav2211/spring-web-flux-todo-app/actions/workflows/gradle-pipeline.yml/badge.svg)](https://github.com/Raghav2211/spring-web-flux-todo-app/actions/workflows/gradle-pipeline.yml)
+[![Maven Pipeline](https://github.com/Raghav2211/spring-web-flux-todo-app/actions/workflows/maven-pipeline.yml/badge.svg)](https://github.com/Raghav2211/spring-web-flux-todo-app/actions/workflows/maven-pipeline.yml)
 
 Todo app is an example rest application, which can be build and deployed on Local and AWS environment.
 
