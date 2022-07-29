@@ -2,7 +2,7 @@
 [![Gradle Pipeline](https://github.com/Raghav2211/spring-web-flux-todo-app/actions/workflows/gradle-pipeline.yml/badge.svg)](https://github.com/Raghav2211/spring-web-flux-todo-app/actions/workflows/gradle-pipeline.yml)
 [![Maven Pipeline](https://github.com/Raghav2211/spring-web-flux-todo-app/actions/workflows/maven-pipeline.yml/badge.svg)](https://github.com/Raghav2211/spring-web-flux-todo-app/actions/workflows/maven-pipeline.yml)
 
-Todo app is an example rest application, which can be build and deployed on Local and AWS environment.
+This application is an scaffold which is a basic setup of spring-cloud-gateway, config-server and a resource server(A todo application). It demonstrate how data flows between gateway & resource-server with using config-server which holds specific enviornment configs and secrets 
 
 ## Tech
 
