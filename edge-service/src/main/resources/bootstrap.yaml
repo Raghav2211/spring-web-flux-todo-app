@@ -45,6 +45,21 @@ spring:
       fail-fast: true
   config:
     activate:
+      on-profile: eks
+
+aws:
+  kms:
+    keyId: "FIXME"
+    region: us-east-2
+
+---
+spring:
+  cloud:
+    config:
+      uri: http://config-server:8080
+      fail-fast: true
+  config:
+    activate:
       on-profile: ci
 aws:
   kms:

@@ -20,6 +20,20 @@ aws:
       service-endpoint: http://kms:8080
       signing-region: eu-west-1
 
+---
+spring:
+  cloud:
+    config:
+      uri: http://config-server:8080
+      fail-fast: true
+  config:
+    activate:
+      on-profile: eks
+
+aws:
+  kms:
+    keyId: "FIXME"
+    region: us-east-2
 
 ---
 spring:
