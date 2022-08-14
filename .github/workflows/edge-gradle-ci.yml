@@ -1,4 +1,4 @@
-name: Gradle Pipeline
+name: Edge Service Gradle Pipeline
 
 on:
   push:
