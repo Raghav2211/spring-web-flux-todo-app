@@ -258,7 +258,13 @@ jobs:
           username: ${{ secrets.PACKAGE_USERNAME }}
           password: ${{ secrets.PACKAGE_RWD }}
       - name: Docker image push
+        working-directory: artifact
         run: |
+
+          docker load < config-server/docker/image.tar
+          docker load < todo/docker/image.tar
+          docker load < edge-service/docker/image.tar
+          
           docker tag todo:${{env.app_version}} ghcr.io/raghav2211/spring-web-flux-todo-app/gradle/todo:${{env.app_version}}
           docker push ghcr.io/raghav2211/spring-web-flux-todo-app/gradle/todo:${{env.app_version}}      
 
