@@ -1,0 +1,21 @@
+name: Build Local Stack
+on:
+  workflow_run:
+    workflows: ["Edge Service Gradle Pipeline", "Todo App Gradle Pipeline", "Config Server Gradle Pipeline"]
+    types: 
+      - completed
+
+jobs:
+  checkout:
+    name: Checkout
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          mkdir app && cp -R ci app && cp -R config-server app
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Checkout
+          path: app      
