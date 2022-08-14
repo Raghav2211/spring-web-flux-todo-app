@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-          mkdir app && cp -R ci app && cp -R todo-app app
+          mkdir app && cp -R ci app && cp -R todo-app app && cp -R .git app
       - uses: actions/upload-artifact@v2
         with:
           name: Checkout
