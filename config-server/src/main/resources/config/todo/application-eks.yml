@@ -4,6 +4,6 @@ server:
 spring:
   data:
     mongodb:
-      uri: "{cipher}FIXME"
+      uri: "FIXME - add correct mongodb uri in the format(mongodb://<username>:<password>@<name>.cluster-<clusterId>.us-east-2.docdb.amazonaws.com:27017/tododb?replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false)"
 
 

@@ -39,5 +39,5 @@ spring:
         registration:
           gateway:
             provider: google
-            clientId: "{cipher}FIXME"
-            clientSecret: "{cipher}FIXME"
+            clientId: "FIXME- add correct google oauth2 client id"
+            clientSecret: "FIXME- add correct google oauth2 client secret"
