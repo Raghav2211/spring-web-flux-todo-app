@@ -4,8 +4,10 @@
 
 This application is an scaffold which is a basic setup of spring-cloud-gateway, config-server and a resource server(A todo application). It demonstrate how data flows between gateway & resource-server using config-server which holds specific enviornment configs and secrets 
 
-## Tech
+## WorkFlow
+![Workflow](documentation/workflow.png)
 
+## Tech
 TODO App uses following technologies:
 
 * [Java 11] - JDK
