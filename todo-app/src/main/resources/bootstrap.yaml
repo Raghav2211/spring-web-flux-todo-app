@@ -32,7 +32,7 @@ spring:
 
 aws:
   kms:
-    keyId: "FIXME"
+    keyId: "FIXME - add correct key arn in the format(arn:aws:kms:<region>:<accountId>:key/<keyId>)"
     region: us-east-2
 
 ---
