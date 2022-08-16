@@ -1,14 +1,15 @@
 name: Maven Pipeline
 
 on:
-  push:
-    branches: [ master ]
-    paths-ignore:
-      - '**/README.md'
-  pull_request:
-    branches: [ master ]
-    paths-ignore:
-      - '**/README.md'
+ push:
+   branches: [ master ]
+   paths-ignore:
+     - '**/README.md'
+ pull_request:
+   branches: [ master ]
+   paths-ignore:
+     - '**/README.md'
+
 env:
   app_version: "2.0.0"
   edge-service_version : "1.0.0"
@@ -235,3 +236,48 @@ jobs:
           docker logs todo
           docker logs edge
           docker logs config-server
+
+  
+  push-docker-image-to-github-registry:
+    name: Push to Github package registry
+    runs-on: ubuntu-latest
+    needs: [ package-todo-app-docker , package-edge-service-docker, package-config-server-docker, build-local-stack ]       
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref) }}
+    steps:
+      - name: Download Config Server Docker Image
+        uses: actions/download-artifact@v2
+        with:
+          name: config-server-docker-artifact
+          path: artifact/config-server/docker
+      - name: Download Todo Docker Image
+        uses: actions/download-artifact@v2
+        with:
+          name: todo-docker-artifact
+          path: artifact/todo/docker
+      - name: Download Edge Service Docker Image
+        uses: actions/download-artifact@v2
+        with:
+          name: edge-service-docker-artifact
+          path: artifact/edge-service
+      - name: Login to GitHub Package Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.PACKAGE_USERNAME }}
+          password: ${{ secrets.PACKAGE_RWD }}
+      - name: Docker image push
+        working-directory: artifact
+        run: |
+
+          docker load < config-server/docker/image.tar
+          docker load < todo/docker/image.tar
+          docker load < edge-service/docker/image.tar
+
+          docker tag todo:${{env.app_version}} ghcr.io/raghav2211/spring-web-flux-todo-app/maven/todo:${{env.app_version}}
+          docker push ghcr.io/raghav2211/spring-web-flux-todo-app/maven/todo:${{env.app_version}}      
+
+          docker tag edge-service:${{env.edge-service_version}} ghcr.io/raghav2211/spring-web-flux-todo-app/maven/edge-service:${{env.edge-service_version}}
+          docker push ghcr.io/raghav2211/spring-web-flux-todo-app/maven/edge-service:${{env.edge-service_version}}      
+
+          docker tag config-server:${{env.config-server_version}} ghcr.io/raghav2211/spring-web-flux-todo-app/maven/config-server:${{env.config-server_version}}
+          docker push ghcr.io/raghav2211/spring-web-flux-todo-app/maven/config-server:${{env.config-server_version}}           
