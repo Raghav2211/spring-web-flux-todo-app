@@ -1,18 +1,15 @@
 name: Maven Pipeline
 
-#on:
-#  push:
-#    branches: [ master ]
-#    paths-ignore:
-#      - '**/README.md'
-#  pull_request:
-#    branches: [ master ]
-#    paths-ignore:
-#      - '**/README.md'
 on:
-  push:
-    branches-ignore:
-      - '**'
+ push:
+   branches: [ master ]
+   paths-ignore:
+     - '**/README.md'
+ pull_request:
+   branches: [ master ]
+   paths-ignore:
+     - '**/README.md'
+
 env:
   app_version: "2.0.0"
   edge-service_version : "1.0.0"
