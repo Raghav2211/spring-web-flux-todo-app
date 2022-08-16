@@ -242,7 +242,7 @@ jobs:
     name: Push to Github package registry
     runs-on: ubuntu-latest
     needs: [ package-todo-app-docker , package-edge-service-docker, package-config-server-docker, build-local-stack ]       
-    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref) }}
     steps:
       - name: Download Config Server Docker Image
         uses: actions/download-artifact@v2
