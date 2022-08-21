@@ -9,7 +9,7 @@
         <version>2.7.0</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.spring.webflux.todo</groupId>
+    <groupId>com.github.devraghav.springexamples.todo</groupId>
     <artifactId>todo</artifactId>
     <version>2.0.0</version>
     <name>Todo App</name>

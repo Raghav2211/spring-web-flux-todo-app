@@ -9,7 +9,7 @@
         <version>2.7.0</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.spring.webflux.todo</groupId>
+    <groupId>com.github.devraghav.springexamples.edge</groupId>
     <artifactId>edge-service</artifactId>
     <version>1.0.0</version>
     <name>Edge Service</name>

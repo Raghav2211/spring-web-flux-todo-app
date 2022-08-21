@@ -5,7 +5,7 @@ plugins {
 	id 'java'
 }
 
-group = 'com.spring.webflux.todo'
+group = 'com.github.devraghav.springexamples.edge'
 version = '1.0.0'
 sourceCompatibility = '11'
 
